@@ -52,7 +52,7 @@ jobs:
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 ${{ vars.DEPLOY_BOT_DIR }}/setup.py"
       - name: Create chownhtml file and execute it
         run: |
-          echo "chown -R www-data:www-data ${{ vars.DEPLOY_WEB_DIR }} && chmod -R g+w ${{ vars.DEPLOY_WEB_DIR }}" > /tmp/chownhtml.sh
+          echo "chmod -R g+w ${{ vars.DEPLOY_WEB_DIR }} && chown -R www-data:www-data ${{ vars.DEPLOY_WEB_DIR }}" > /tmp/chownhtml.sh
           chmod +x /tmp/chownhtml.sh
           scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r -p /tmp/chownhtml.sh ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/chownhtml.sh
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "sudo /tmp/chownhtml.sh"
