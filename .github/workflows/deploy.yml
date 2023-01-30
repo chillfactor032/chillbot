@@ -38,14 +38,14 @@ jobs:
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm -rf ${{ vars.DEPLOY_BOT_DIR }}"
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "mkdir --parents ${{ vars.DEPLOY_BOT_DIR }}"
       - name: Deploy Bot Files
-        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./Bot ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}/bot
+        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./bot ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}/bot
       - name: Copy Config File
         run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /tmp/config.json ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}
       - name: Clear Web Root Dir 
         run: |
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm -rf ${{ vars.DEPLOY_WEB_DIR }}(!phpMyAdmin)"
       - name: Deploy Web App Files
-        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./Web ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_WEB_DIR }}
+        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./web ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_WEB_DIR }}
       - name: Deploy setup.py and run it
         run: |
           scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./setup.py ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}/../
