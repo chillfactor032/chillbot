@@ -22,8 +22,8 @@ jobs:
         run: pwd
       - name: Print Working Directory
         run: ls -la
-      - name: Deploy Web Console To Server
-        run: echo -e "${{ secrets.TEST }}" > /tmp/test
+      - name: Write SSH Key
+        run: echo -e "${{ secrets.DEPOLOY_KEY }}" > /tmp/key
       - name: Echo Test
-        run: cat /tmp/test
+        run: scp -i /tmp/key -r ./README.md ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_WEB_DIR }}
       
