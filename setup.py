@@ -4,7 +4,7 @@ import os
 import json
 
 SCRIPT_DIR = os.path.dirname(__file__)
-CONFIG_PATH = os.path.join(SCRIPT_DIR, "config", "config.json")
+CONFIG_PATH = os.path.join(SCRIPT_DIR, "config.json")
 
 # Make sure config file exists
 if not os.path.exists(CONFIG_PATH):
