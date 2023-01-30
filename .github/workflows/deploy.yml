@@ -24,7 +24,7 @@ jobs:
         run: ls -la
       - name: Write SSH Key
         run: |
-          echo -e "${{ secrets.DEPOLOY_KEY }}" > /tmp/key
+          echo -e "${{ secrets.DEPLOY_KEY }}" > /tmp/key
           chmod 600 /tmp/key
       - name: Echo Test
         run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./README.md ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_WEB_DIR }}
