@@ -28,4 +28,9 @@ jobs:
           chmod 600 /tmp/key
       - name: Deploy Web App Files
         run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./README.md ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_WEB_DIR }}
-      
+      - name: Create chownhtml file and execute it
+        run: |
+          echo "chown -R www-data:www-data /var/www/html" > /tmp/chownhtml.sh
+          chmod +x /tmp/chownhtml.sh
+          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r /tmp/chownhtml.sh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/chownhtml.sh
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "sudo /tmp/chownhtml.sh"
