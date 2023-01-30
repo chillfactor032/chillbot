@@ -26,6 +26,6 @@ jobs:
         run: |
           echo -e "${{ secrets.DEPLOY_KEY }}" > /tmp/key
           chmod 600 /tmp/key
-      - name: Echo Test
+      - name: Deploy Web App Files
         run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./README.md ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_WEB_DIR }}
       
