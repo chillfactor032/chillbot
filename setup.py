@@ -53,17 +53,18 @@ def deploy_web(src, dst):
 print("=== Deploying Chillbot ===")
 print(f"  WEB_ROOT: {WEB_ROOT}")
 print()
-print("=== Remove Old Files ===")
-print("  Clearing WEB_ROOT...", end="")
-if delete_files(WEB_ROOT):
-    print("Done")
-else:
-    print("ERROR")
-    print("  Error clearing the web root. Quitting.")
-    sys.exit()
-print()
+
 
 if env == "test":
+    print("=== Remove Old Files ===")
+    print("  Clearing WEB_ROOT...", end="")
+    if delete_files(WEB_ROOT):
+        print("Done")
+    else:
+        print("ERROR")
+        print("  Error clearing the web root. Quitting.")
+        sys.exit()
+    print()
     print("=== Deploying Web Code ===")
     repo_web_dir = os.path.join(SCRIPT_DIR, "web")
     print(f"  Copying from: {repo_web_dir}")
