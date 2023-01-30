@@ -22,6 +22,8 @@ jobs:
         run: pwd
       - name: Print Working Directory
         run: ls -la
-      - name: Create Deployment SSH Key
-        run: echo ${{ secrets.TEST }}
+      - name: Deploy Web Console To Server
+        run: echo -e ${{ secrets.TEST }} > /tmp/test
+      - name: Echo Test
+        run: cat /tmp/test
       
