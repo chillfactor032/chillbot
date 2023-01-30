@@ -81,7 +81,7 @@ print("=== Writing PHP Config File ===")
 print("Copying config.json")
 
 dst_config = os.path.join(WEB_ROOT, "inc", "config.json")
-if shutil.copy(CONFIG_PATH, dst_config):
+if shutil.copy2(CONFIG_PATH, dst_config):
     print("Done")
 else:
     print("Error copying config.json")
