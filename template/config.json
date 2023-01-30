@@ -1,0 +1,34 @@
+{
+    "version": "1.0",
+    "env": "test",
+    "access_token": "<TWITCH OAUTH TOKEN>",
+    "command_prefix": "!",
+    "channels": [
+        "<CHANNEL>"
+    ],
+    "database": {
+        "host": "<DB HOST>",
+        "db": "<DB NAME>",
+        "user_name": "<DB USER>",
+        "password": "<DB PASS>"
+    },
+    "web": {
+        "www_dir": "<WEB ROOT DIR>"
+    },
+    "twitch": {
+        "client_id": "<TWITCH APP CLIENT ID>",
+        "client_secret": "<TWITCH APP CLIENT SECRET>",
+        "redirect_url": "<TWITCH APP REDIRECT URL>",
+        "authorized_users": [
+            "<AUTHORIZED TWITCH USER>",
+            "<AUTHORIZED TWITCH USER>"
+        ]
+    },
+    "discord": {
+        "vote_result_webhook_url": "<DISCORD WEBHOOK URL>"
+    },
+    "bot": {
+        "validation_key": "<BOT KEY not used>"
+    },
+    "debug": true
+}
