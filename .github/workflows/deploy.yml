@@ -17,7 +17,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Print Env
-        run: pwd | ls -la
+        run: pwd
+      - name: Print Working Directory
+        run: ls -la
       - name: Deploy Web Console
         uses: appleboy/scp-action@master
         with:
