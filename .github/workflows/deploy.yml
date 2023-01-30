@@ -43,7 +43,7 @@ jobs:
         run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /tmp/config.json ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}
       - name: Clear Web Root Dir 
         run: |
-          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "shopt -s extglob && rm -rf ${{ vars.DEPLOY_WEB_DIR }}/(!phpMyAdmin)"
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "shopt -s extglob && rm -rf '${{ vars.DEPLOY_WEB_DIR }}/(!phpMyAdmin)'"
       - name: Deploy Web App Files
         run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./web ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_WEB_DIR }}
       - name: Deploy setup.py and run it
