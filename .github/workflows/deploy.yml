@@ -23,7 +23,7 @@ jobs:
       - name: Print Working Directory
         run: ls -la
       - name: Deploy Web Console To Server
-        run: echo -e ${{ secrets.TEST }} > /tmp/test
+        run: echo -e "${{ secrets.TEST }}" > /tmp/test
       - name: Echo Test
         run: cat /tmp/test
       
