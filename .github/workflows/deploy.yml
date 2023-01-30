@@ -18,19 +18,42 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
-      - name: Print Env
-        run: pwd
+      - name: Summary
+        run: |
+          echo "Deployment User: "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}"
+          echo "Method: SCP (Private Key)"
+          echo "Remote Web Root: ${{ vars.DEPLOY_WEB_DIR }}"
+          echo "Remote Bot Dir: ${{ vars.DEPLOY_BOT_DIR }}"
       - name: Print Working Directory
         run: ls -la
       - name: Write SSH Key
         run: |
           echo -e "${{ secrets.DEPLOY_KEY }}" > /tmp/key
           chmod 600 /tmp/key
+      - name: Write Config JSON
+        run: |
+          echo ${{ secrets.PROD_CONFIG }} | base64 -d > /tmp/config.json
+      - name: Clear Bot Dir and Ensure It Exists 
+        run: |
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm -rf ${{ vars.DEPLOY_BOT_DIR }}"
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "mkdir --parents ${{ vars.DEPLOY_BOT_DIR }}"
+      - name: Deploy Bot Files
+        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./Bot ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}/bot
+      - name: Copy Config File
+        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /tmp/config.json ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}
+      - name: Clear Web Root Dir 
+        run: |
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm -rf ${{ vars.DEPLOY_WEB_DIR }}(!phpMyAdmin)"
       - name: Deploy Web App Files
-        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./README.md ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_WEB_DIR }}
+        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./Web ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_WEB_DIR }}
+      - name: Deploy setup.py and run it
+        run: |
+          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./setup.py ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}/../
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 ${{ vars.DEPLOY_BOT_DIR }}/../setup.py"
       - name: Create chownhtml file and execute it
         run: |
-          echo "chown -R www-data:www-data /var/www/html" > /tmp/chownhtml.sh
+          echo "chown -R www-data:www-data ${{ vars.DEPLOY_WEB_DIR }}" > /tmp/chownhtml.sh
           chmod +x /tmp/chownhtml.sh
-          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r -p /tmp/chownhtml.sh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/chownhtml.sh
-          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "sudo /tmp/chownhtml.sh"
+          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r -p /tmp/chownhtml.sh ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/chownhtml.sh
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "sudo /tmp/chownhtml.sh"
+          
