@@ -30,12 +30,17 @@ jobs:
         run: |
           echo -e "${{ secrets.DEPLOY_KEY }}" > /tmp/key
           chmod 600 /tmp/key
+      - name: Write Config JSON
+        run: |
+          echo ${{ secrets.PROD_CONFIG }} | base64 -d > /tmp/config.json
       - name: Clear Bot Dir and Ensure It Exists 
         run: |
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm -rf ${{ vars.DEPLOY_BOT_DIR }}"
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "mkdir --parents ${{ vars.DEPLOY_BOT_DIR }}"
       - name: Deploy Bot Files
-        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./Bot ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}
+        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./Bot ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}/bot
+      - name: Copy Config File
+        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /tmp/config.json ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}
       - name: Clear Web Root Dir 
         run: |
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm -rf ${{ vars.DEPLOY_WEB_DIR }}(!phpMyAdmin)"
