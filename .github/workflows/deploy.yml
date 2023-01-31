@@ -33,30 +33,21 @@ jobs:
       - name: Write Config JSON
         run: |
           echo ${{ secrets.PROD_CONFIG }} | base64 -d > /tmp/config.json
-      - name: Clear Bot Dir and Ensure It Exists 
+          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r /tmp/config.json ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/config.json
+      - name: Clear Bot Dir
         run: |
-          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm -rf ${{ vars.DEPLOY_BOT_DIR }}"
-          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "mkdir --parents ${{ vars.DEPLOY_BOT_DIR }}"
-      - name: Deploy Bot Files
-        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./bot ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}/bot
-      - name: Clear Web Root Dir 
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm -rf chillbot"
+      - name: Clone Repo
         run: |
-          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm -rf '${{ vars.DEPLOY_WEB_DIR }}/(!phpMyAdmin)'"
-      - name: Deploy Web App Files
-        run: scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./web/* ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_WEB_DIR }}
-      - name: Copy Config File
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "git clone https://github.com/chillfactor032/chillbot.git"
+      - name: Run Setup Script
         run: |
-          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /tmp/config.json ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}
-          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /tmp/config.json ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_WEB_DIR }}/inc
-      #- name: Deploy setup.py and run it
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 setup.py -c /tmp/config.json && rm /tmp/config.json"
+      #- name: Create chownhtml file and execute it
       #  run: |
-      #    scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r ./setup.py ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_BOT_DIR }}
-      #    ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 ${{ vars.DEPLOY_BOT_DIR }}/setup.py"
-      - name: Create chownhtml file and execute it
-        run: |
-          echo "chmod -R g+w ${{ vars.DEPLOY_WEB_DIR }} && chown -R www-data:www-data ${{ vars.DEPLOY_WEB_DIR }}" > /tmp/chownhtml.sh
-          chmod +x /tmp/chownhtml.sh
-          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm /tmp/chownhtml.sh"
-          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r -p /tmp/chownhtml.sh ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/chownhtml.sh
-          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "sudo /tmp/chownhtml.sh"
+      #    echo "chmod -R g+w ${{ vars.DEPLOY_WEB_DIR }} && chown -R www-data:www-data ${{ vars.DEPLOY_WEB_DIR }}" > /tmp/chownhtml.sh
+      #    chmod +x /tmp/chownhtml.sh
+      #    ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm /tmp/chownhtml.sh"
+      #    scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r -p /tmp/chownhtml.sh ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/chownhtml.sh
+      #    ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "sudo /tmp/chownhtml.sh"
           
