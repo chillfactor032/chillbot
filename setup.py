@@ -26,13 +26,12 @@ CONFIG_PATH = os.path.join(SCRIPT_DIR, args.config).replace("\\", "/")
 
 # Running Setup Script to move the files to the correct location
 def main():
-    
     print("=== ChillBot Setup ===")
     if get_os() == OperatingSystem.WINDOWS:
-        print("Windows OS Detected")
+        print("  Windows OS Detected")
         python_cmd = "py"
     else:
-        print("Linux Detected")
+        print("  Linux Detected")
         python_cmd = "python3"
     print()
     
@@ -85,14 +84,6 @@ def main():
     else:
         print("  Non-prod env. Skipping this step.")
     print("")
-
-    print("=== Install Python Requirements ===")
-    requirements_file = os.path.join("bot", "requirements.txt").replace("\\", "/")
-    log_file = os.path.join(SCRIPT_DIR, "pip_install.log").replace("\\", "/")
-    if pip_install_requirements(python_cmd, requirements_file, log_file):
-        print("  Done")
-    else:
-        print("  Error installing python requirements.")
     print("=== Setup Complete ===")
 
 def get_os():
