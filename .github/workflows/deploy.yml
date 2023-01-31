@@ -44,6 +44,8 @@ jobs:
       - name: Run Setup Script
         run: |
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 chillbot/setup.py -c /tmp/config.json && rm /tmp/config.json"
+      - name: Install Python Dependencies
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 -m pip install bot/requirements.txt"
       #- name: Create chownhtml file and execute it
       #  run: |
       #    echo "chmod -R g+w ${{ vars.DEPLOY_WEB_DIR }} && chown -R www-data:www-data ${{ vars.DEPLOY_WEB_DIR }}" > /tmp/chownhtml.sh
