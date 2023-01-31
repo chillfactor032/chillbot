@@ -2,7 +2,7 @@
 error_log
 
 # Config File
-config/*.json
+config
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

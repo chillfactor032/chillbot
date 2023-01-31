@@ -129,7 +129,7 @@ class ChillBot(commands.Bot):
         if(not self.check_priv(ctx)): return
 
         #If already a vote in progress, ignore
-        if self.active_vote_id is not None or self.active_vote_id >= 0:
+        if self.active_vote_id is not None and self.active_vote_id >= 0:
             await ctx.send(f"Poll is already in progress. User !votesongs to list the candidates.") 
             return
 

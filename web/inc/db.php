@@ -8,11 +8,11 @@ class Database{
 	private $conn = NULL;
 	private $error = "";
 
-	function __construct($db_host, $db_user, $db_pass, $db_name) {
-		$this->db_host = $db_host;
-		$this->db_user = $db_user;
-		$this->db_pass = $db_pass;
-		$this->db_name = $db_name;
+	function __construct($config) {
+		$this->db_host = $config["host"];
+		$this->db_user = $config["user_name"];
+		$this->db_pass = $config["password"];
+		$this->db_name = $config["db"];
 		$this->conn = NULL;
 		$this->error = "";
 	}

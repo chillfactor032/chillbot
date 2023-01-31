@@ -14,10 +14,7 @@ $monitor_script_html = "";
 $page_header = "Live Learn Voting";
 
 //Create DB Connection
-$db = new Database($config["database"]["host"],
-	$config["database"]["user_name"],
-	$config["database"]["password"],
-	$config["database"]["db"]);
+$db = new Database($config["database"]);
 
 if(!$db->connect()){
 	//To-Do: show proper error msg

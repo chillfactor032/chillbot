@@ -121,6 +121,8 @@ function sidenav($cur_file){
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="bot.css?$random">
+<link rel="stylesheet" type="text/css" href="toastify.css">
+<script type="text/javascript" src="toastify.js"></script>
 <script src="https://kit.fontawesome.com/943ccd817c.js" crossorigin="anonymous"></script>
 <script type="text/javascript" src="bot.js?$random"></script>
 <title>$page_title</title>
