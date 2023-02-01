@@ -135,7 +135,7 @@ def delete_files(path):
 def deploy_web(src, dst):
     cmd = f"cp -pr {src}/* {dst}"
     print(f"  {cmd}")
-    ret = subprocess.run([cmd], capture_output=True)
+    ret = subprocess.run([cmd], shell=True, capture_output=True)
     if(ret.returncode != 0):
         print(f"  Error running copy command")
         err = ret.stderr.decode('utf-8')
@@ -151,7 +151,7 @@ def deploy_web(src, dst):
 def copy_config(src, dst):
     cmd = f"cp -p {src} {dst}"
     print(f"  {cmd}")
-    ret = subprocess.run([cmd], capture_output=True)
+    ret = subprocess.run([cmd], shell=True, capture_output=True)
     if(ret.returncode != 0):
         print(f"  Error running copy command")
         err = ret.stderr.decode('utf-8')
