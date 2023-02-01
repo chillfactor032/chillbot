@@ -33,7 +33,7 @@ jobs:
       - name: Write Config JSON
         run: |
           echo ${{ secrets.PROD_CONFIG }} | base64 -d > /tmp/config.json
-          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r /tmp/config.json ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/config.json
+          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /tmp/config.json ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/config.json
       - name: Clear Bot Dir
         run: |
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm -rf /home/${{ vars.DEPLOY_USER }}/chillbot"
