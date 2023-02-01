@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser(
     description = 'A Twitch.tv chat bot',
     epilog = '')
 parser.add_argument("-c", "--config", default="config.json", help="Path to the config.json file.")
+parser.add_argument("-n", "--clean", action='store_true', help="Remove the old files only.")
 args = parser.parse_args()
 
 # Place the config file adjacent to setup.py
@@ -50,19 +51,26 @@ def main():
 
     print("=== Clean Web Root Dir ===")
     if delete_files(web_root):
-        print(" Done!")
+        print("  Done!")
     else:
         print("  Error clearing web root. Quitting")
         sys.exit(1)
     print()
 
-    print("=== Copy web To Web Root ===")
-    if deploy_web(WEB_APP_SOURCE, web_root):
-        print(" Done!")
+    if args.clean:
+        print("=== Clean Only Flag Set ===")
+        print("  Skipping Further Steps")
+        print()
+        print("=== Setup Complete ===")
+        sys.exit(0)
     else:
-        print("  Error copying bot files to web root. Quitting")
-        sys.exit(1)
-    print()
+        print("=== Copy web To Web Root ===")
+        if deploy_web(WEB_APP_SOURCE, web_root):
+            print("  Done!")
+        else:
+            print("  Error copying bot files to web root. Quitting")
+            sys.exit(1)
+        print()
 
     print("=== Writing PHP Config File ===")
     dst_config = os.path.join(web_root, "inc", "config.json").replace("\\", "/")
