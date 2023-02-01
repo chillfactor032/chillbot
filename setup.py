@@ -83,15 +83,6 @@ def main():
         sys.exit(1)
     print()
 
-    print("== CHOWN Web Root to www-data ===")
-    if env == "prod":
-        if chown(web_root):
-            print("  Done")
-        else:
-            print("  Error running CHMOD and CHOWN")
-    else:
-        print("  Non-prod env. Skipping this step.")
-    print("")
     print("=== Setup Complete ===")
 
 def get_os():
