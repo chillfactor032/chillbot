@@ -140,7 +140,19 @@ def deploy_web(src, dst):
 
 # Copy the config.json to the PHP Dir
 def copy_config(src, dst):
-    return shutil.copy2(src, dst)
+    cmd = f"cp -pr {src}/* {dst}"
+    print(f"  {cmd}")
+    ret = subprocess.run([cmd], capture_output=True)
+    if(ret.returncode != 0):
+        print(f"  Error running copy command")
+        err = ret.stderr.decode('utf-8')
+        out = ret.stdout.decode('utf-8')
+        if len(ret.stderr) > 0:
+            print(f"  {err}")
+        if len(ret.stdout) > 0:
+            print(f"  {out}")
+        return False
+    return True
 
 def pip_install_requirements(python_cmd, req_path, log_path):
     #python3 -m pip install -r {req_path}
