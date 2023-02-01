@@ -133,14 +133,23 @@ def delete_files(path):
     return True
 
 def deploy_web(src, dst):
-    r = shutil.copytree(src, dst, dirs_exist_ok=True) 
-    if r:
-        return True
-    return False
+    cmd = f"cp -pr {src}/* {dst}"
+    print(f"  {cmd}")
+    ret = subprocess.run([cmd], capture_output=True)
+    if(ret.returncode != 0):
+        print(f"  Error running copy command")
+        err = ret.stderr.decode('utf-8')
+        out = ret.stdout.decode('utf-8')
+        if len(ret.stderr) > 0:
+            print(f"  {err}")
+        if len(ret.stdout) > 0:
+            print(f"  {out}")
+        return False
+    return True
 
 # Copy the config.json to the PHP Dir
 def copy_config(src, dst):
-    cmd = f"cp -pr {src}/* {dst}"
+    cmd = f"cp -p {src} {dst}"
     print(f"  {cmd}")
     ret = subprocess.run([cmd], capture_output=True)
     if(ret.returncode != 0):
