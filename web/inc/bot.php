@@ -149,7 +149,7 @@ HTML;
     $twitchHtml .= "\t</div>\r\n</div>";
     $html .= $twitchHtml;
     $html .= "<div class=\"main\">\r\n\t<div class=\"main-top\">\r\n";
-    $html .= "\t\t<h1>MrFusion_Bot</h1>\r\n";
+    $html .= "\t\t<h3>MrFusion_Bot</h3>\r\n";
     $html .= page_logged_in();
     $html .= "\t</div>\r\n";
     $html .= "\t<div class=\"main-content\">\r\n";

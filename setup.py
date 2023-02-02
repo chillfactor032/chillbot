@@ -25,10 +25,13 @@ SCRIPT_DIR = os.path.dirname(__file__)
 WEB_APP_SOURCE = os.path.join(SCRIPT_DIR, "web").replace("\\", "/")
 CONFIG_PATH = os.path.join(SCRIPT_DIR, args.config).replace("\\", "/")
 
+
 # Running Setup Script to move the files to the correct location
 def main():
+    OS_PLATFORM = get_os()
+
     print("=== ChillBot Setup ===")
-    if get_os() == OperatingSystem.WINDOWS:
+    if OS_PLATFORM == OperatingSystem.WINDOWS:
         print("  Windows OS Detected")
         python_cmd = "py"
     else:
@@ -65,22 +68,30 @@ def main():
         sys.exit(0)
     else:
         print("=== Copy web To Web Root ===")
-        if deploy_web(WEB_APP_SOURCE, web_root):
-            print("  Done!")
+        if OS_PLATFORM == OperatingSystem.WINDOWS:
+            shutil.copytree(WEB_APP_SOURCE, web_root, dirs_exist_ok=True)
+            print("  Done")
         else:
-            print("  Error copying bot files to web root. Quitting")
-            sys.exit(1)
+            if deploy_web(WEB_APP_SOURCE, web_root):
+                print("  Done!")
+            else:
+                print("  Error copying bot files to web root. Quitting")
+                sys.exit(1)
         print()
 
     print("=== Writing PHP Config File ===")
     dst_config = os.path.join(web_root, "inc", "config.json").replace("\\", "/")
     print(f"  Config Source Path: {CONFIG_PATH}")
     print(f"  Config Destination Path: {dst_config}")
-    if copy_config(CONFIG_PATH, dst_config):
-        print("  Copy complete.")
+    if OS_PLATFORM == OperatingSystem.WINDOWS:
+        shutil.copy2(CONFIG_PATH, dst_config)
+        print("  Done")
     else:
-        print("  Error copying config file! Quitting")
-        sys.exit(1)
+        if copy_config(CONFIG_PATH, dst_config):
+            print("  Copy complete.")
+        else:
+            print("  Error copying config file! Quitting")
+            sys.exit(1)
     print()
 
     print("=== Setup Complete ===")

@@ -38,6 +38,31 @@ class Database{
 		return false;
 	}
 
+	// Insert a raid
+	function add_raid($user_name, $user_id, $viewers,){
+		$result = false;
+		$stmt = $this->conn->prepare("INSERT INTO raids(user_name, user_id, viewers) VALUES (?, ?, ?);");
+		$stmt->bind_param("sii", $user_name, $user_id, $viewers);
+		$result = $stmt->execute();
+		if(!$result){
+			//echo($this->conn->error);
+		}
+		$stmt->close();
+		return $result;
+	}
+
+	//Fetch the raids
+	function get_raids(){
+		if(!$this->is_connected()) return -1;
+		$sql = "SELECT * FROM raids;";
+		$result = $this->conn->query($sql);
+		if($result->num_rows > 0){
+			$rows = $result->fetch_all(MYSQLI_ASSOC);
+			return $rows;	
+		}
+		return 0;
+	}
+
 	//Fetch the current active vote, or return 0 if none.
 	function current_vote(){
 		if(!$this->is_connected()) return -1;
@@ -46,6 +71,18 @@ class Database{
 		if($result->num_rows > 0){
 			$row = $result->fetch_assoc();
 			return $row["current_vote"];
+		}
+		return 0;
+	}
+
+	//Fetch the current active vote, or return 0 if none.
+	function prev_vote(){
+		if(!$this->is_connected()) return -1;
+		$sql = "SELECT MAX(id) as prev_vote FROM vote WHERE status = 'closed';";
+		$result = $this->conn->query($sql);
+		if($result->num_rows > 0){
+			$row = $result->fetch_assoc();
+			return $row["prev_vote"];
 		}
 		return 0;
 	}
@@ -135,7 +172,7 @@ FROM candidate as c
 LEFT JOIN ballot as b ON b.candidate_id = c.id
 	AND b.vote_id = c.vote_id
 WHERE c.vote_id = $vote_id
-GROUP BY c.name
+GROUP BY c.ballot_num
 $order_by_sql;
 SQL;
 		$result = $this->conn->query($sql);

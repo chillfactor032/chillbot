@@ -24,6 +24,17 @@ if(!$db->connect()){
 //Get the current open vote id, or 0 if none
 $cur_vote = $db->current_vote();
 
+//Get most recent vote that is closed
+$prev_vote = $db->prev_vote();
+$prev_vote_html = "";
+if($prev_vote > 0){
+	$prev_vote_html = <<<HTML
+<div style="float: left;">
+		<button id="view_last_poll_btn" class="styled-button" type="button" onclick="window.location.href = 'livelearns.php?vote=$prev_vote';">View Last Poll</button>
+	</div>
+HTML;
+}
+
 //First process the create vote form if present
 if($cur_vote == 0 && isset($_POST["songs"])){
 	$cur_vote = $db->create_vote();
@@ -112,7 +123,7 @@ if(isset($_GET["vote"])){
 * Get PreReqs for each page mode
 */
 if($page_mode == "view"){
-	$page_header = "Live Learn Vote: Results";
+	$page_header = "Live Learn Poll: Results";
 	$candidates = $db->get_votes($cur_vote);
 	$winners = array();
 	$pool_room_winners = array();
@@ -161,7 +172,7 @@ if($page_mode == "view"){
 				$vote_winner_msg .= "<br>The <b>".$i."th</b> ";
 		}
 		$vote_winner_msg .= "winner of Live Learn of the Stream is ";
-		$vote_winner_msg .= "<b>".htmlentities($winners[$i]["name"]) . "</b> requested by <b>" . htmlentities($winners[$i]["requester"]) ."</b>";
+		$vote_winner_msg .= "<b>Live Learn ". htmlentities($winners[$i]["ballot_num"]) . " " .htmlentities($winners[$i]["name"]) . "</b> requested by <b>" . htmlentities($winners[$i]["requester"]) ."</b>";
 		$vote_winner_msg .= " with " . $winners[$i]["vote_cnt"] . " votes ";
 		$vote_winner_msg .= "(".$winners[$i]["percent"]."%)";
 	}
@@ -190,10 +201,10 @@ if($page_mode == "view"){
 	}
 	
 }elseif($page_mode == "monitor"){
-	$page_header = "Live Learn Vote: In Progress";
+	$page_header = "Live Learn Poll: In Progress";
 	$candidates = $db->get_votes($cur_vote);
 }elseif($page_mode == "create"){
-	$page_header = "Create Live Learn Vote";
+	$page_header = "Create Live Learn Poll";
 }elseif($page_mode == "invalid"){
 	//Invalid Vote ID
 }else{
@@ -213,7 +224,7 @@ if($page_mode == "view"){
 	//Expected values: candidates, cur_vote, monitor script, buttons_html
 	$html = <<<EOD
 <div class="center" style="width: 80%;" >
-<h3 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> $page_header </h3>
+<h1 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> $page_header </h1>
 <div class="winner-text">
 $vote_winner_msg
 </div>
@@ -296,17 +307,17 @@ $end = <<<EOD
 </table>
 <div style="float: right;">
     <button id="discord_button" class="styled-button" type="button" onclick="sendDiscord();">Send to Discord</button>
-	<button class="styled-button" type="button" onclick="window.location.href = 'livelearns.php';">New Vote</button>
+	<button class="styled-button" type="button" onclick="window.location.href = 'livelearns.php';">New Poll</button>
 </div>
 </form>
 </div>
 EOD;
 		$html .= $end;
 }elseif($page_mode == "monitor"){
-		//Expected values: candidates, cur_vote, monitor script, buttons_html
+	//Expected values: candidates, cur_vote, monitor script, buttons_html
 	$html = <<<EOD
 <div class="center" style="width: 80%;" >
-<h3 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> $page_header </h3>
+<h1 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> $page_header </h1>
 <form method="GET" action="livelearns.php">
 <input type="hidden" name="vote" value="$cur_vote">
 <input type="hidden" name="closevote" value="true">
@@ -376,7 +387,7 @@ $end = <<<EOD
 	</tr>
 </table>
 <div style="float: right;">
-	<input class="styled-button" type="submit" value="Close Vote" >
+	<input class="styled-button" type="submit" value="Close Poll" >
 </div>
 </form>
 <script>
@@ -388,7 +399,7 @@ EOD;
 }elseif($page_mode == "create"){
 	$html = <<<EOD
 <div class="center" style="width: 80%;" >
-<h3 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> $page_header </h3>
+<h1 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> $page_header </h1>
 <form method="POST" onsubmit="localStorage.removeItem('state')" action="livelearns.php">
 <table id="song-table" class="styled-table center" style="">
 	<tr>
@@ -413,8 +424,8 @@ EOD;
 		<td style="text-align: center;">
 			<input type="checkbox" id="song$i-tm" name="songs[$i][tm]" value="tm">
 		</td>
-		<td><input type="text" id="song$i-name" name="songs[$i][name]" value=""></td>
-		<td><input type="text" id="song$i-req" name="songs[$i][req]" value=""></td>
+		<td><input type="text" id="song$i-name" name="songs[$i][name]" value="" autocomplete="off"></td>
+		<td><input type="text" id="song$i-req" name="songs[$i][req]" value="" autocomplete="off"></td>
 		<td style="text-align: center;"><input type="checkbox" id="song$i-pr" name="songs[$i][pr]" value="pr"></td>
 		<td>
 			<a href="#" onclick="songTableAddRow('song-table', $i)"><img src="img/ico_add.png" style="width:20px; height: auto;" title="Add Row Below"></a>
@@ -427,9 +438,11 @@ EOD;
 
 $end = <<<EOD
 </table>
-<div style="float: right;">
-	<input class="styled-button" type="submit" value="Create Vote" >
-</div>
+<div>
+	$prev_vote_html
+	<div style="float: right;">
+		<input class="styled-button" type="submit" value="Create Poll" >
+	</div>
 </form>
 <script>
 	loadCandidatesLS();

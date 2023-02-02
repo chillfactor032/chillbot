@@ -81,7 +81,7 @@ body {
     margin: 0px 160px 0px 0px;
 }
 
-.main-top h1{
+.main-top h3{
     margin: 0;
     align-items: center;
     color: var(--palette-color4);
@@ -137,7 +137,7 @@ body {
 }
 
 .styled-table tr:nth-child(odd){
-	background-color: #909090; 
+	background-color: #727272; 
 }
 
 .styled-table tr:hover {
@@ -160,6 +160,13 @@ body {
 	border: 1px solid #ccc;
 	border-radius: 4px;
 	box-sizing: border-box;
+}
+
+.timezone {
+    font-size: 14px;
+    position: absolute; 
+    bottom: 0;
+    right: 0;
 }
 
 .center {

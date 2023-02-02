@@ -1,28 +1,108 @@
-// Options for the toast
-var options = {
-	text: "Happy toasting!",
-	duration: 5000,
-	gravity: "bottom",
-	callback: function() {
-		console.log("Toast hidden");
-		Toastify.reposition();
-	},
-	close: true,
-	style: {
-		"background-color": "#0D7377",
-	},
-	onClick: function(){} // Callback after click
-};
 
-// Initializing the toast
-var myToast = Toastify(options);
+function getTimeZone(){
+	var tz = localStorage.getItem("timezone"); 
+	var saveMethod = localStorage.getItem("timezone_save_method"); 
+	if(tz === null){
+		tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+		saveMethod = "guess";
+		localStorage.setItem("timezone_save_method", saveMethod); 
+	}
+	console.log("TimeZone: "+tz + " ("+saveMethod+")");
+	return tz;
+}
 
-/*
-// Toast after delay
-setTimeout(function() {
+function msToTimeDelta(ms){
+    var secs = Math.floor((ms / 1000) % 60);
+    var mins = Math.floor((ms / (1000 * 60)) % 60);
+    var hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+	var days = Math.floor((ms / (1000 * 60 * 60))/24);
+	if(days == 1){
+		return "a day ago";
+	}
+	if(hours > 0){
+		if(hours == 1){
+			return "an hour ago";
+		}
+		return hours + " hours ago";
+	}
+	if(mins > 0){
+		if(mins == 1){
+			return "a min ago";
+		}
+		return mins + " mins ago";
+	}
+	if(secs > 0){
+		return "a few secs ago";
+	}
+	return "";
+}
+
+function formatDate(date, tz){
+	//List Timezones supported by this browser
+	//Intl.supportedValuesOf('timeZone');
+	options = {
+		year: 'numeric', month: '2-digit', day: '2-digit',
+		hour: '2-digit', minute: '2-digit',
+		hour12: true,
+		timeZone: tz
+	};
+	const dateTimeFormat = new Intl.DateTimeFormat('fr-CA', options)
+	const parts = dateTimeFormat.formatToParts(date);
+	const partValues = parts.map(p => p.value);
+	var ampm = "PM";
+	if(partValues[10]=="a.m."){
+		ampm = "AM";
+	}
+	dateStr = partValues[0]+"-"+partValues[2]+"-"+partValues[4];
+	dateStr += " "+partValues[6]+":"+partValues[8]+ampm;
+	//Calc Time From Now
+	time_delta_ms = new Date().getTime() - date.getTime();
+	delta = msToTimeDelta(time_delta_ms)
+	console.log(delta);
+	return dateStr+" ("+delta+")";
+}
+
+function loggedInMessage(){
+	// Options for the toast
+	var options = {
+		text: "Login Successful",
+		duration: 5000,
+		gravity: "bottom",
+		callback: function() {
+			console.log("Toast hidden");
+			Toastify.reposition();
+		},
+		close: true,
+		style: {
+			"color": "#fff",
+			"background": "#009933"
+		},
+		onClick: function(){} // Callback after click
+	};
+	var myToast = Toastify(options);
 	myToast.showToast();
-}, 4500);
-*/
+}
+
+function unauthorizedMessage(){
+	// Options for the toast
+	var options = {
+		text: "You must be logged in to do that.",
+		duration: 5000,
+		gravity: "bottom",
+		callback: function() {
+			console.log("Toast hidden");
+			Toastify.reposition();
+		},
+		close: true,
+		style: {
+			"color": "#fff",
+			"background": "#b30000"
+		},
+		onClick: function(){} // Callback after click
+	};
+	var myToast = Toastify(options);
+	myToast.showToast();
+}
 
 function songTableAddRow(tableId, rowNum){
 	var table = document.getElementById(tableId);
@@ -32,7 +112,7 @@ function songTableAddRow(tableId, rowNum){
 	
 	var row;
 	var tm,name,req,pr;
-	for (var i = table.rows.length-2; i > rowNum; i--) {
+	for(var i = table.rows.length-2; i > rowNum; i--) {
 		tm = document.getElementById("song"+(i-1)+"-tm");
 		name = document.getElementById("song"+(i-1)+"-name");
 		req = document.getElementById("song"+(i-1)+"-req");
@@ -237,3 +317,13 @@ function saveCandidatesLS(){
 	console.log("Saving State: " + ls_json);
 	localStorage.setItem("state", ls_json);
 }
+
+function escapeHtml(unsafe)
+{
+    return unsafe
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
+ }
