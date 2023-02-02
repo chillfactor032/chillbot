@@ -33,7 +33,7 @@ jobs:
       - name: Write Config JSON
         run: |
           echo ${{ secrets.PROD_CONFIG }} | base64 -d > /tmp/config.json
-          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r /tmp/config.json ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/config.json
+          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /tmp/config.json ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/config.json
       - name: Clear Bot Dir
         run: |
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm -rf /home/${{ vars.DEPLOY_USER }}/chillbot"
@@ -46,12 +46,12 @@ jobs:
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 chillbot/setup.py -c /tmp/config.json && rm /tmp/config.json"
       - name: Install Python Dependencies
         run: |
-          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 -m pip install bot/requirements.txt"
-      #- name: Create chownhtml file and execute it
-      #  run: |
-      #    echo "chmod -R g+w ${{ vars.DEPLOY_WEB_DIR }} && chown -R www-data:www-data ${{ vars.DEPLOY_WEB_DIR }}" > /tmp/chownhtml.sh
-      #    chmod +x /tmp/chownhtml.sh
-      #    ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm /tmp/chownhtml.sh"
-      #    scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r -p /tmp/chownhtml.sh ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/chownhtml.sh
-      #    ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "sudo /tmp/chownhtml.sh"
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 -m pip install -r /home/${{ vars.DEPLOY_USER }}/chillbot/bot/requirements.txt"
+      - name: Create chownhtml file and execute it
+        run: |
+          echo "chmod -R g+w ${{ vars.DEPLOY_WEB_DIR }} && chown -R www-data:www-data ${{ vars.DEPLOY_WEB_DIR }}" > /tmp/chownhtml.sh
+          chmod +x /tmp/chownhtml.sh
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "rm /tmp/chownhtml.sh"
+          scp -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -r -p /tmp/chownhtml.sh ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/chownhtml.sh
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "sudo /tmp/chownhtml.sh"
           
