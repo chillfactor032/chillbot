@@ -39,7 +39,7 @@ class Database{
 	}
 
 	// Insert a raid
-	function add_raid($user_name, $user_id, $viewers,){
+	function add_raid($user_name, $user_id, $viewers){
 		$result = false;
 		$stmt = $this->conn->prepare("INSERT INTO raids(user_name, user_id, viewers) VALUES (?, ?, ?);");
 		$stmt->bind_param("sii", $user_name, $user_id, $viewers);
