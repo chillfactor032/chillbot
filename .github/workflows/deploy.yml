@@ -43,7 +43,7 @@ jobs:
           sleep 10s
       - name: Run Setup Script
         run: |
-          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 chillbot/setup.py -c /tmp/config.json && rm /tmp/config.json"
+          ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 chillbot/setup.py -c /tmp/config.json"
       - name: Install Python Dependencies
         run: |
           ssh -i /tmp/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} "python3 -m pip install -r /home/${{ vars.DEPLOY_USER }}/chillbot/bot/requirements.txt"
