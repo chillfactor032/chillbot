@@ -60,18 +60,45 @@ HTML;
 	die();
 }
 
+//Show the unauthorized page if not logged in
+if(!is_authorized()){
+	unauthorized_page();
+}
+
 ?>
 
 <?php sidenav(__FILE__); ?>
 
-<h2>Sidebar</h2>
+<div class="center" style="width: 80%; position: relative;">
+	<h1 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> Chat </h1>
+</div>
+<div class="cards" style="margin-left: 50px; margin-right: 50px;">
+<article class="card">
+	<img src="/img/squirrel.jpg" alt="Sample photo">
+	<div class="text">
+		<h3>Seamlessly visualize quality</h3>
+		<p>Collaboratively administrate empowered markets via plug-and-play networks.</p>
+		<button>Here's why</button>
+	</div>
+	</article>
+	<article class="card">
+	<img src="/img/squirrel.jpg" alt="Sample photo">
+	<div class="text">
+		<h3>Seamlessly visualize quality</h3>
+		<p>Collaboratively administrate empowered markets via plug-and-play networks.</p>
+		<button>Here's why</button>
+	</div>
+	</article>
+	<article class="card">
+	<img src="/img/squirrel.jpg" alt="Sample photo">
+	<div class="text">
+		<h3>Seamlessly visualize quality</h3>
+		<p>Collaboratively administrate empowered markets via plug-and-play networks.</p>
+		<button>Here's why</button>
+	</div>
+	</article>
+</div>
 
-<p>This sidebar is of full height (100%) and always shown.</p>
-<p>Scroll down the page to see the result.</p>
-<p>Some text to enable scrolling.. Lorem ipsum dolor sit amet, illum definitiones no quo, maluisset concludaturque et eum, altera fabulas ut quo. Atqui causae gloriatur ius te, id agam omnis evertitur eum. Affert laboramus repudiandae nec et. Inciderint efficiantur his ad. Eum no molestiae voluptatibus.</p>
-<p>Some text to enable scrolling.. Lorem ipsum dolor sit amet, illum definitiones no quo, maluisset concludaturque et eum, altera fabulas ut quo. Atqui causae gloriatur ius te, id agam omnis evertitur eum. Affert laboramus repudiandae nec et. Inciderint efficiantur his ad. Eum no molestiae voluptatibus.</p>
-<p>Some text to enable scrolling.. Lorem ipsum dolor sit amet, illum definitiones no quo, maluisset concludaturque et eum, altera fabulas ut quo. Atqui causae gloriatur ius te, id agam omnis evertitur eum. Affert laboramus repudiandae nec et. Inciderint efficiantur his ad. Eum no molestiae voluptatibus.</p>
-<p>Some text to enable scrolling.. Lorem ipsum dolor sit amet, illum definitiones no quo, maluisset concludaturque et eum, altera fabulas ut quo. Atqui causae gloriatur ius te, id agam omnis evertitur eum. Affert laboramus repudiandae nec et. Inciderint efficiantur his ad. Eum no molestiae voluptatibus.</p>
 <?php echo($showToast) ?>
 <?php page_footer(); ?>
 

@@ -4,7 +4,10 @@ require_once("./inc/bot.php");
 //If user is not an authorized user, redirect to index
 redirect_unauthorized();
 
+$date = new DateTimeImmutable();
+
 $number_emoji = [
+    ":zero:",
     ":one:",
     ":two:",
     ":three:",
@@ -16,13 +19,13 @@ $number_emoji = [
     ":nine:"
 ];
 
-function getWebhookJson($vote_data, $vote_id){
+function getWebhookJson_vote($vote_data, $vote_id){
     global $number_emoji;
     $webhook_obj = [
         "embeds"=>[[
             "color" => 11601173,
             "title" => "Live Learn Poll Results",
-            "url" => "https://chillaspect.com/twitch/bot/livelearns.php?vote=".$vote_id,
+            "url" => "https://twitchbot.chillaspect.com/livelearns.php?vote=".$vote_id,
             "fields" => [],
             "timestamp" => "2015-12-31T12:00:00.000Z",
             "footer" => [
@@ -34,18 +37,72 @@ function getWebhookJson($vote_data, $vote_id){
         "name" => "",
         "value" => ""
     ];
+    
     for($i = 0; $i < count($vote_data); $i++){
+        $emoji_str = "";
+        $chars = strval($i);
+        $split = str_split($chars);
+        foreach($split as $c){
+            $num = intval($c);
+            $emoji_str .= $number_emoji[$num];
+        }
         //If not the first item, add the spacer
         if($i > 0){
             array_push($webhook_obj["embeds"][0]["fields"], $spacer);
         }
         $col1 = [
-            "name" => "".$number_emoji[$i]." ".$vote_data[$i]["name"],
+            "name" => "".$emoji_str." ".$vote_data[$i]["name"],
             "value" => "requested by ".$vote_data[$i]["requester"],
             "inline" => true
         ];
         $col2 = [
             "name" => $vote_data[$i]["vote_cnt"]." Votes",
+            "value" => "",
+            "inline" => true
+        ];
+        array_push($webhook_obj["embeds"][0]["fields"], $col1);
+        array_push($webhook_obj["embeds"][0]["fields"], $col2);
+    }
+    return json_encode($webhook_obj, JSON_PRETTY_PRINT+JSON_UNESCAPED_SLASHES);
+}
+
+function getWebhookJson_raid($raids, $days){
+    global $number_emoji;
+    $webhook_obj = [
+        "embeds"=>[[
+            "color" => 11601173,
+            "title" => "Raids Today",
+            "url" => "https://twitchbot.chillaspect.com/raids.php?days=".$days,
+            "fields" => [],
+            "timestamp" => 
+            "footer" => [
+                "text" => "Autoposted by MrFusion_Bot"
+            ]]
+        ]
+    ];
+    $spacer = [
+        "name" => "",
+        "value" => ""
+    ];
+    for($i = 0; $i < count($raids); $i++){
+        $emoji_str = "";
+        $chars = strval($i);
+        $split = str_split($chars);
+        foreach($split as $c){
+            $num = intval($c);
+            $emoji_str .= $number_emoji[$num];
+        }
+        //If not the first item, add the spacer
+        if($i > 0){
+            array_push($webhook_obj["embeds"][0]["fields"], $spacer);
+        }
+        $col1 = [
+            "name" => $emoji_str." ".$raids[$i]["user_name"],
+            "value" => "",
+            "inline" => true
+        ];
+        $col2 = [
+            "name" => ":man_standing: ".$raids[$i]["viewers"],
             "value" => "",
             "inline" => true
         ];
@@ -84,8 +141,24 @@ if(isset($_GET["vote"])){
     }
     if($vote_status == "closed"){
         $vote_data = $db->get_votes($vote_id_get, True);
-        $json = getWebhookJson($vote_data, $vote_id_get);
+        $json = getWebhookJson_vote($vote_data, $vote_id_get);
         $status = postJson($config["discord"]["vote_result_webhook_url"], $json);
+        echo($status);
+        die();
+    }
+}
+
+if(isset($_GET["raid"])){
+    $days = 1;
+    if(isset($_GET["days"])){
+        $days = intval($_GET["days"]);
+    }
+    $raid_count = 0;
+    $raids = $db->get_raids($days);
+    if($raids != 0){
+        //Post Raids to Discord
+        $json = getWebhookJson_raid($raids, $days);
+        $status = postJson($config["discord"]["raid_webhook_url"], $json);
         echo($status);
         die();
     }

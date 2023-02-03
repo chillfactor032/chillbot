@@ -52,10 +52,13 @@ class Database{
 	}
 
 	//Fetch the raids
-	function get_raids(){
+	function get_raids($days=1){
 		if(!$this->is_connected()) return -1;
-		$sql = "SELECT * FROM raids;";
-		$result = $this->conn->query($sql);
+		$sql = "SELECT * FROM raids WHERE timestamp >= DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL ? DAY);";
+		$stmt = $this->conn->prepare($sql); 
+		$stmt->bind_param("i", $days);
+		$stmt->execute();
+		$result = $stmt->get_result();
 		if($result->num_rows > 0){
 			$rows = $result->fetch_all(MYSQLI_ASSOC);
 			return $rows;	
