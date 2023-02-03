@@ -70,7 +70,7 @@ if(!is_authorized()){
 <?php sidenav(__FILE__); ?>
 
 <div class="center" style="width: 80%; position: relative;">
-	<h1 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> Chat </h1>
+	<h1 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> Home </h1>
 </div>
 <div class="cards" style="margin-left: 50px; margin-right: 50px;">
 <article class="card">

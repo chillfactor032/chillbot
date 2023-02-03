@@ -4,7 +4,7 @@ require_once("./inc/bot.php");
 //If user is not an authorized user, redirect to index
 redirect_unauthorized();
 
-$date = new DateTimeImmutable();
+$timestamp = date('Y-m-d H:i:s');
 
 $number_emoji = [
     ":zero:",
@@ -20,6 +20,7 @@ $number_emoji = [
 ];
 
 function getWebhookJson_vote($vote_data, $vote_id){
+    global $timestamp;
     global $number_emoji;
     $webhook_obj = [
         "embeds"=>[[
@@ -27,7 +28,7 @@ function getWebhookJson_vote($vote_data, $vote_id){
             "title" => "Live Learn Poll Results",
             "url" => "https://twitchbot.chillaspect.com/livelearns.php?vote=".$vote_id,
             "fields" => [],
-            "timestamp" => "2015-12-31T12:00:00.000Z",
+            "timestamp" => $timestamp,
             "footer" => [
                 "text" => "Autoposted by MrFusion_Bot"
             ]]
@@ -67,17 +68,20 @@ function getWebhookJson_vote($vote_data, $vote_id){
 }
 
 function getWebhookJson_raid($raids, $days){
+    global $timestamp;
     global $number_emoji;
     $webhook_obj = [
-        "embeds"=>[[
-            "color" => 11601173,
-            "title" => "Raids Today",
-            "url" => "https://twitchbot.chillaspect.com/raids.php?days=".$days,
-            "fields" => [],
-            "timestamp" => 
-            "footer" => [
-                "text" => "Autoposted by MrFusion_Bot"
-            ]]
+        "embeds"=>[
+            [
+                "color" => 11601173,
+                "title" => "Live Learn Poll Results",
+                "url" => "https://twitchbot.chillaspect.com/raids.php?days=".$days,
+                "fields" => [],
+                "timestamp" => $timestamp,
+                "footer" => [
+                    "text" => "Autoposted by MrFusion_Bot"
+                ]
+            ]
         ]
     ];
     $spacer = [
