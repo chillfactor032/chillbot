@@ -34,6 +34,19 @@ class BotDB:
             attempts -= 1
 
     """
+    Log a chat message
+    """
+    def log_chat(self, username, badges, msg):
+        self.check_connection()
+        sql = "INSERT INTO chat(username, badges, msg) VALUES (%s, %s, %s);"
+        cursor = self.db.cursor()
+        cursor.execute(sql, (username, badges, msg))
+        self.db.commit()
+        row_id = cursor.lastrowid
+        cursor.close()
+        return row_id
+
+    """
     Get the current vote with status "open"
     """
     def current_vote(self):

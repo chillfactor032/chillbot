@@ -9,6 +9,8 @@ class Twitch{
 		$this->client_id = $client_id;
 		$this->client_secret = $client_secret;
 		$this->redirect_url = $redirect_url;
+		$this->token_file = "token";
+		$this->app_token = "";
 	}
 
 	function get_oauth_url($state){
@@ -55,11 +57,31 @@ class Twitch{
 		return $r;
 	}
 
-	
+	// Fetch List of Current EventSub Subscriptions
+	function get_eventsubs($token){
+		$data = false;
+		$headers = array("Client-Id: ".$this->client_id, "Authorization: Bearer ".$token);
+		$url = "https://api.twitch.tv/helix/eventsub/subscriptions";
+		$r = $this->http_request("GET", $url, $data, $headers);
+		if($r["info"]["http_code"] == 200){
+			$obj = json_decode($r["body"], true);
+			return $obj;
+		}
+		return $r;
+	}
+
 	//Utility Function
 	//Generate an anti-csrf token
 	function get_state($salt = "", $len=16){
 		return substr(hash("sha256", $salt . random_int(0,PHP_INT_MAX)), 0, $len);
+	}
+
+	//Utility Function
+	//Utility Function to read OAuth token from file
+	function read_token_file(){
+		if(file_exists($this->token_file)){
+			$this->app_token = file_get_contents($this->token_file);
+		}
 	}
 
 	//Utility Function

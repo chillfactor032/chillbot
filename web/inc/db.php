@@ -63,7 +63,19 @@ class Database{
 			$rows = $result->fetch_all(MYSQLI_ASSOC);
 			return $rows;	
 		}
-		return 0;
+		return [];
+	}
+
+	//Fetch the top chatters
+	function top_chatters(){
+		if(!$this->is_connected()) return [];
+		$sql = "SELECT username, badges, COUNT(id) as msg_cnt FROM chat WHERE timestamp >= DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY) GROUP BY username ORDER BY msg_cnt DESC LIMIT 5;";
+		$result = $this->conn->query($sql);
+		if($result->num_rows > 0){
+			$rows = $result->fetch_all(MYSQLI_ASSOC);
+			return $rows;	
+		}
+		return [];
 	}
 
 	//Fetch the current active vote, or return 0 if none.
@@ -186,7 +198,7 @@ SQL;
 			$rows = $result->fetch_all(MYSQLI_ASSOC);
 			return $rows;
 		}
-		return 0;
+		return [];
 	}
 
 	function close_vote($cur_vote){

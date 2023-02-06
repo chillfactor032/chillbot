@@ -55,6 +55,7 @@ class ChillBot(commands.Bot):
         self.voters = []
         self.active_vote_id = -1
         self.prefix = config["command_prefix"]
+        self.log_chat_flag = config["log_chat"]
         self.command_list = [
             {
                 "name": "votestart",
@@ -75,12 +76,6 @@ class ChillBot(commands.Bot):
                 "level": [
                     Level.MOD,
                     Level.BROADCASTER
-                ]
-            },
-            {
-                "name": "test",
-                "level": [
-                    Level.ANY
                 ]
             }
         ]
@@ -104,6 +99,8 @@ class ChillBot(commands.Bot):
             self.log.info(f'#{message.channel.name} - "[Bot]{self.nick} - {message.content}')
         else:
             #User Message
+            if self.log_chat_flag:
+                self.log_chat(message)
             user_prefix = self.get_author_prefix(message)
             self.log.info(f'#{message.channel.name} - {user_prefix}{message.author.name} - {message.content}')
 
@@ -180,12 +177,6 @@ class ChillBot(commands.Bot):
                 self.valid_ballots.append(candidate[0])
                 candidate_str += f"{candidate[0]} for {candidate[1]}. "
             await ctx.send(f"Get your vote in! Enter {candidate_str}")
-            
-    @commands.command(name='test')
-    async def test(self, ctx):
-        if(not self.check_priv(ctx)): return
-        n = self.get_vote_number(ctx.message.content)
-        await ctx.send(f"Testing! Vote: [{n}]")
     
     """
     Extract the ballot number from a message string or return -1
@@ -202,6 +193,14 @@ class ChillBot(commands.Bot):
             return vote
         return -1
     
+    """
+    Log chat msg to the db
+    """
+    def log_chat(self, message):
+        level = self.get_user_level(message.author)
+        badge_str = "|".join(lvl.name for lvl in level if lvl != Level.ANY)
+        self.db.log_chat(message.author.name, badge_str, message.content)
+        
     """
     Check to see if command is in list of valid commands, and ignore the rest
         i.e. ignore commands not intended for this bot
@@ -231,6 +230,7 @@ class ChillBot(commands.Bot):
     def get_author_prefix(self, message):
         user_prefix = ''
         levels = self.get_user_level(message.author)
+        print(levels)
         if Level.SUB in levels:
             user_prefix = '[SubT1]'
         if Level.SUBT2 in levels:

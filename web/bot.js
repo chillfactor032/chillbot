@@ -32,9 +32,9 @@ function msToTimeDelta(ms){
 		return mins + " mins ago";
 	}
 	if(secs > 0){
-		return "a few secs ago";
+		return secs + " secs ago";
 	}
-	return "";
+	return "now";
 }
 
 function formatDate(date, tz){
