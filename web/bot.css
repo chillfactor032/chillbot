@@ -202,6 +202,21 @@ body {
     width: 50%;
 }
 
+#log-textarea {
+    width: 100%;
+    height: 80vh;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: var(--palette-color1);
+    color: var(--palette-color4);
+}
+
+#logs-select {
+    background-color: var(--palette-color1);
+    color: var(--palette-color4);
+}
+
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}

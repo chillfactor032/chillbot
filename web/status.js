@@ -7,6 +7,16 @@ const badge_json = {
     "BROADCASTER": "<i class=\"fa-solid fa-video\"></i>",
 };
 
+const eventsubs_status = {
+    "enabled": "<i class=\"alive fa-solid fa-circle-check status-gif\"></i>",
+    "webhook_callback_verification_pending": "<i class=\"warning fa-solid fa-triangle-exclamation\"></i>",
+    "webhook_callback_verification_failed": "<i class=\"dead fa-solid fa-skull\"></i>",
+    "notification_failures_exceeded": "<i class=\"dead fa-solid fa-skull\"></i>",
+    "authorization_revoked": "<i class=\"dead fa-solid fa-skull\"></i>",
+    "moderator_removed": "<i class=\"dead fa-solid fa-skull\"></i>",
+    "user_removed": "<i class=\"dead fa-solid fa-skull\"></i>"
+};
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -20,6 +30,45 @@ function updateBotStatus(){
 
     e.innerHTML = "<i class=\"fa-solid fa-circle-check status-gif\"></i>";
 }
+
+async function updateEventsubs(){
+    console.log("updateEventsubs");
+    var e = document.getElementById("eventsubs-status-img");
+    e.innerHTML = "<img src=\"img/status.gif\" class=\"status-gif\">";
+
+    //Fetch Event Subs
+    let response = await fetch("status.php?card=eventsubs");
+    let json = await response.json();
+    
+    var table = document.getElementById("eventsubs-table");
+    table.innerHTML = "";
+
+    const tr = table.insertRow();
+    const td1 = tr.insertCell();
+    td1.appendChild(document.createTextNode("Event"));
+    const td2 = tr.insertCell();
+    td2.appendChild(document.createTextNode("Status"));
+
+    console.log(json);
+
+    for(let i = 0; i < json["eventsubs"].length; i++){
+        const es_type = json["eventsubs"][i]["type"];
+        const es_status = json["eventsubs"][i]["status"];
+        let symbol = "<i class=\"fa-solid fa-question\"></i>";
+        if(eventsubs_status.hasOwnProperty(es_status)){
+            symbol = eventsubs_status[es_status];
+        }
+        const tr = table.insertRow();
+        const td1 = tr.insertCell();
+        td1.appendChild(document.createTextNode(es_type));
+        const td2 = tr.insertCell();
+        td2.innerHTML = symbol;
+    }
+    updateDiv = document.getElementById("eventsubs-updatetime-ms");
+    updateDiv.value = Date.now();
+    e.innerHTML = "<i class=\"fa-solid fa-circle-check status-gif\"></i>";
+}
+
 
 async function updateChatters(){
     var e = document.getElementById("topchatters-status-img");
@@ -68,7 +117,6 @@ async function updateChatters(){
         const tr = table.insertRow();
         const td1 = tr.insertCell();
         td1.innerHTML = badges_str + " " + username;
-        //td1.appendChild(document.createTextNode());
         const td2 = tr.insertCell();
         td2.appendChild(document.createTextNode(msg_cnt));
     }

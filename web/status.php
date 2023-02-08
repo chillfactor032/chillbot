@@ -20,7 +20,32 @@ function botstatus(){
 }
 
 function eventsubs(){
-    return [];
+    global $twitch;
+    global $config;
+    $eventsubs = $twitch->get_eventsubs();
+    $eventsubs_obj = [];
+
+    foreach($config["eventsubs"]["json"] as $es){
+        $arr = [
+            "type" => $es["type"],
+            "status" => "authorization_revoked",
+            "id" => "",
+            "data" => []
+        ];
+        array_push($eventsubs_obj, $arr);
+    }
+
+    for($i = 0; $i < count($eventsubs_obj); $i++){
+        for($j = 0; $j < count($eventsubs["data"]); $j++){
+            if($eventsubs_obj[$i]["type"] == $eventsubs["data"][$j]["type"]){
+                $eventsubs_obj[$i]["id"] = $eventsubs["data"][$j]["id"];
+                $eventsubs_obj[$i]["status"] = $eventsubs["data"][$j]["status"];
+                $eventsubs_obj[$i]["data"] =  $eventsubs["data"][$j];
+            }
+        }
+    }
+
+    return $eventsubs_obj;
 }
 
 function topchatters(){

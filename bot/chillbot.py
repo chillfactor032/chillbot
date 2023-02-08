@@ -14,13 +14,17 @@ parser = argparse.ArgumentParser(
     epilog = '')
 
 
-args = parser.parse_args()
+parser.add_argument("-l", 
+    "--loglevel", 
+    choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], 
+    default="INFO",
+    help="Specify the log level. INFO is the default.")
 
-#Setup Logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s  %(message)s',
-)
+parser.add_argument("-f", 
+    "--logfile", 
+    help="Specify log file location. Default is location is in the <WEBROOT>/log/chillbot.log")
+
+args = parser.parse_args()
 
 #Initial Extensions
 initial_extensions = (
@@ -289,6 +293,20 @@ if not config:
     print("Config file not loaded")
     print("Quitting")
     sys.exit(1)
+
+log_level = logging.getLevelName(args.loglevel)
+
+if not args.logfile:
+    log_file = os.path.join(config["web"]["www_dir"], "log", "chillbot.log")
+
+#Setup Logging
+logging.basicConfig(
+    filename=log_file,
+    level=log_level,
+    filemode="w",
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 
 bot = ChillBot(config)
 

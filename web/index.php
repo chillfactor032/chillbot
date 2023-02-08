@@ -70,7 +70,7 @@ if(!is_authorized()){
 <?php sidenav(__FILE__); ?>
 
 <div class="center" style="width: 80%; position: relative;">
-	<h1 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> Home </h1>
+	<h1 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> Dashboard </h1>
 </div>
 <div class="cards" style="">
 	<article class="card">
@@ -87,7 +87,7 @@ if(!is_authorized()){
 				</tr>
 				<tr>
 					<td class="item">Twitch Chat:</td>
-					<td class="dead"><i class="fa-solid fa-skull"></i></i></td>
+					<td class="dead"><i class="fa-solid fa-skull"></i></td>
 				</tr>
 			</table>
 			<div style="margin: 10px auto 10px auto; text-align: center;">
@@ -107,20 +107,13 @@ if(!is_authorized()){
 	<article class="card">
 		<h2 class="heading"> Event Subscriptions </h2>
 		<div class="text">
-			<table class="status-table">
+			<table id="eventsubs-table" class="status-table">
 				<tr>
 					<th >Event</th>
 					<th>Status</th>
 				</tr>
-				<tr>
-					<td class="border-right">channel.raid</td>
-					<td>enabled &nbsp; <i class="fa-solid fa-circle-check"></i></td>
-				</tr>
 			</table>
 			<div style="margin: 10px auto 10px auto; text-align: center;">
-				<p>
-					This feature is not live yet. Stay tuned.
-				</p>
 			</div>
 		</div>
 		<div id="eventsubs-status-img" style="margin: 0; padding:0"><i class="fa-solid fa-circle-check status-gif"></i></div>
@@ -182,7 +175,8 @@ var update_arr = [{
 	}
 ];
 
-updateRaids();
+//Only update EventSubs on page load and manually
+updateEventsubs();
 
 var tick = 0;
 setInterval(() => {

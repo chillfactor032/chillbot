@@ -2,16 +2,17 @@
 session_start();
 
 require_once("./inc/twitch.php");
-require_once("inc/config.php");
+require_once("./inc/config.php");
 require_once("./inc/db.php");
+require_once("./inc/log.php");
 
 $POOL_ROOM_BALLOT = 9999;
 
 $links = [
 	[
-		"name" => "Home",
+		"name" => "Dash",
 		"file" => "index.php",
-        "icon" => "fa-house",
+        "icon" => "fa-solar-panel",
 		"highlight" => ""
 	],[
 		"name" => "Voting",
@@ -28,8 +29,15 @@ $links = [
 		"file" => "chat.php",
         "icon" => "fa-comment",
 		"highlight" => ""
+	],[
+		"name" => "Logs",
+		"file" => "logs.php",
+        "icon" => "fa-file-lines",
+		"highlight" => ""
 	]
 ];
+
+$bot_name = $config["bot_name"];
 
 $twitch = new Twitch($config["twitch"]["client_id"],$config["twitch"]["client_secret"],$config["twitch"]["redirect_url"]);
 
@@ -105,7 +113,7 @@ EOD;
 }
 
 function sidenav($cur_file){
-    global $links, $twitch, $state;
+    global $bot_name, $links, $twitch, $state;
     $cur_file = basename($cur_file);
 	for($i = 0; $i < count($links); $i++){
 		if($cur_file == $links[$i]["file"]){
@@ -129,13 +137,15 @@ function sidenav($cur_file){
 </head>
 <body>
 HTML;
+
 	$html .= "<div class=\"sidenav\">\r\n";
-	$active_path  =basename(__FILE__);
 	for($i = 0; $i < count($links); $i++){
-		if($active_path == $links[$i]["file"]){
+		if($cur_file == $links[$i]["file"]){
 			$links[$i]["highlight"] = "active";
+			$html .= "\t<a href=\"".$links[$i]["file"]."\"><p><i class=\"fa-solid ".$links[$i]["icon"]. " icon\"></i>".$links[$i]["name"]."&nbsp;<i class=\"fa-solid fa-caret-right\"></i></p></a>\r\n";
+		}else{
+			$html .= "\t<a href=\"".$links[$i]["file"]."\"><p><i class=\"fa-solid ".$links[$i]["icon"]. " icon\"></i>".$links[$i]["name"]."</p></a>\r\n";
 		}
-		$html .= "\t<a href=\"".$links[$i]["file"]."\"><p><i class=\"fa-solid ".$links[$i]["icon"]. " icon\"></i>".$links[$i]["name"]."</p></a>\r\n";
 	}
 
     $twitchHtml = "\t<div class=\"side-bottom\">\r\n";
@@ -149,7 +159,7 @@ HTML;
     $twitchHtml .= "\t</div>\r\n</div>";
     $html .= $twitchHtml;
     $html .= "<div class=\"main\">\r\n\t<div class=\"main-top\">\r\n";
-    $html .= "\t\t<h3>MrFusion_Bot</h3>\r\n";
+    $html .= "\t\t<h3>$bot_name</h3>\r\n";
     $html .= page_logged_in();
     $html .= "\t</div>\r\n";
     $html .= "\t<div class=\"main-content\">\r\n";
@@ -198,8 +208,17 @@ function page_unauthorized(){
 	
 }
 
-function send_vote_results_discord(){
-
+function bot_process_running(){
+	$bot_cmd = "chillbot.py";
+	$execstring="ps aux";
+	$output="";
+	exec($execstring, $output);
+	foreach($output as $line){
+		if(str_contains($line, $bot_cmd)){
+			return True;
+		}
+	}
+	return False;
 }
 
 function page_footer(){

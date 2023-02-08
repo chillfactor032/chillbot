@@ -13,7 +13,8 @@ class BotDB:
             host=self.config["host"],
             user=self.config["user_name"],
             password=self.config["password"],
-            database=self.config["db"]
+            database=self.config["db"],
+            charset="utf8"
         )
         if self.is_connected():
             connected = "Connected"
@@ -30,7 +31,7 @@ class BotDB:
     def check_connection(self, attempts=3):
         while not self.is_connected() and attempts > 0:
             print("DB Connection Timed Out. Reconnecting...")
-            self.connect()
+            self.connect(charset="utf8")
             attempts -= 1
 
     """
