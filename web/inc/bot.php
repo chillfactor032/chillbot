@@ -213,12 +213,18 @@ function bot_process_running(){
 	$execstring="ps aux";
 	$output="";
 	exec($execstring, $output);
+	
 	foreach($output as $line){
-		if(str_contains($line, $bot_cmd)){
-			return True;
-		}
+		$pos = strpos($line, $bot_cmd);\
+		return is_numeric($pos);
 	}
 	return False;
+}
+
+function bot_start_process(){
+	$bot_cmd = "chillbot.py";
+	$execstring='bash -c "exec nohup setsid python3 ~/chillbot/bot/chillbot.py > /dev/null 2>&1 &"';
+	exec($execstring);
 }
 
 function page_footer(){

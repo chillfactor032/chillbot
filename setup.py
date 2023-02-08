@@ -94,6 +94,21 @@ def main():
             sys.exit(1)
     print()
 
+    print("=== Writing Python Config File ===")
+    dst_config = os.path.join(SCRIPT_DIR, "config", "config.json").replace("\\", "/")
+    print(f"  Config Source Path: {CONFIG_PATH}")
+    print(f"  Config Destination Path: {dst_config}")
+    if OS_PLATFORM == OperatingSystem.WINDOWS:
+        shutil.copy2(CONFIG_PATH, dst_config)
+        print("  Done")
+    else:
+        if copy_config(CONFIG_PATH, dst_config):
+            print("  Copy complete.")
+        else:
+            print("  Error copying config file! Quitting")
+            sys.exit(1)
+    print()
+
     print("=== Setup Complete ===")
 
 def get_os():
