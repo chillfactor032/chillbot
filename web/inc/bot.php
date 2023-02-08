@@ -215,7 +215,7 @@ function bot_process_running(){
 	exec($execstring, $output);
 	
 	foreach($output as $line){
-		$pos = strpos($line, $bot_cmd);\
+		$pos = strpos($line, $bot_cmd);
 		return is_numeric($pos);
 	}
 	return False;
