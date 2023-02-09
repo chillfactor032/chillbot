@@ -210,21 +210,28 @@ function page_unauthorized(){
 
 function bot_process_running(){
 	$bot_cmd = "chillbot.py";
-	$execstring="ps aux";
+	$execstring="ps axo pid,args";
 	$output="";
 	exec($execstring, $output);
-	
 	foreach($output as $line){
 		$pos = strpos($line, $bot_cmd);
-		return is_numeric($pos);
+		if(is_numeric($pos)){
+            $arr = explode(" ", trim($line));
+            return $arr[0];
+        }
 	}
-	return False;
+	return -1;
+}
+
+function kill_process($pid){
+	$cmd = "kill $pid";
+	shell_exec($cmd);
 }
 
 function bot_start_process(){
 	$bot_cmd = "chillbot.py";
 	$execstring='bash -c "exec nohup setsid python3 ~/chillbot/bot/chillbot.py > /dev/null 2>&1 &"';
-	exec($execstring);
+	shell_exec($execstring);
 }
 
 function page_footer(){
