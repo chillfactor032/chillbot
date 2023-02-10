@@ -63,7 +63,20 @@ function process_notification($headers, $body){
             $result = $db->add_raid($raider_name, $raider_id, $viewers);
             $str = "Type: Raid - Raider: $raider_name($raider_id) - Viewers: $viewers - DB: $result";
             eventsub_log($str);
-        break;
+            break;
+        case "stream.online":
+            //Stream is Live
+            $user = $body->event->broadcaster_user_name;
+            $time = $body->event->started_at;
+            eventsub_log("Type: Stream Online [$user] at $time");
+            die();
+            break;
+        case "stream.offline":
+            //Stream is Offline
+            $user = $body->event->broadcaster_user_name;
+            eventsub_log("Type: Stream Online [$user]");
+            die();
+            break;
     }
     die();
 }

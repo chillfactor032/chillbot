@@ -55,9 +55,7 @@ async function updateEventsubs(){
         const es_type = json["eventsubs"][i]["type"];
         const es_status = json["eventsubs"][i]["status"];
         let symbol = "<i class=\"fa-solid fa-question\"></i>";
-        if(eventsubs_status.hasOwnProperty(es_status)){
-            symbol = eventsubs_status[es_status];
-        }
+        symbol = eventsubs_status[es_status];
         const tr = table.insertRow();
         const td1 = tr.insertCell();
         td1.appendChild(document.createTextNode(es_type));

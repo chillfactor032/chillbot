@@ -5,30 +5,6 @@ require_once("./inc/bot.php");
 redirect_unauthorized();
 
 $log_list = get_log_names();
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
-log_msg("This is a test", "app");
 
 //If a log get param is set, echo log contents and exit
 $since_line = 0;
