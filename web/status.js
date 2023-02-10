@@ -43,23 +43,25 @@ async function updateEventsubs(){
     var table = document.getElementById("eventsubs-table");
     table.innerHTML = "";
 
-    const tr = table.insertRow();
-    const td1 = tr.insertCell();
+    let tr = table.insertRow();
+    let td1 = tr.insertCell();
     td1.appendChild(document.createTextNode("Event"));
-    const td2 = tr.insertCell();
+    let td2 = tr.insertCell();
     td2.appendChild(document.createTextNode("Status"));
+    let es_type = "";
+    let es_status= "";
 
     console.log(json);
 
     for(let i = 0; i < json["eventsubs"].length; i++){
-        const es_type = json["eventsubs"][i]["type"];
-        const es_status = json["eventsubs"][i]["status"];
-        let symbol = "<i class=\"fa-solid fa-question\"></i>";
+        es_type = json["eventsubs"][i]["type"];
+        es_status = json["eventsubs"][i]["status"];
+        symbol = "<i class=\"fa-solid fa-question\"></i>";
         symbol = eventsubs_status[es_status];
-        const tr = table.insertRow();
-        const td1 = tr.insertCell();
+        tr = table.insertRow();
+        td1 = tr.insertCell();
         td1.appendChild(document.createTextNode(es_type));
-        const td2 = tr.insertCell();
+        td2 = tr.insertCell();
         td2.innerHTML = symbol;
     }
     updateDiv = document.getElementById("eventsubs-updatetime-ms");
