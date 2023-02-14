@@ -12,9 +12,10 @@ $stream_start_json["condition"]["broadcaster_user_id"] = $user_id;
 print_r($twitch->delete_eventsub("b2991163-fc19-4931-b73f-61ed0e41677e"));
 print_r($twitch->get_eventsubs());
 */
-
-echo("Bot Running? : " . bot_process_running());
-echo("Run Bot: " . bot_process_running());
+$out = bot_process_running();
+echo("Bot Running: $out \n\n");
+echo("Starting Bot... \n\n");
 sleep(3);
-echo("Bot Running? : " . bot_process_running());
+$out = bot_process_running();
+echo("Bot Running: $out \n\n");
 ?>

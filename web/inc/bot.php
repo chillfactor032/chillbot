@@ -223,14 +223,18 @@ function bot_process_running(){
 	return -1;
 }
 
-function kill_process($pid){
-	$cmd = "kill $pid";
-	shell_exec($cmd);
+function bot_start_service(){
+	$execstring='/bin/systemctl start chillbot.service';
+	shell_exec($execstring);
 }
 
-function bot_start_process(){
-	$bot_cmd = "chillbot.py";
-	$execstring='bash -c "exec nohup setsid python3 ~/chillbot/bot/chillbot.py > /dev/null 2>&1 &"';
+function bot_stop_process(){
+	$execstring='/bin/systemctl stop chillbot.service';
+	shell_exec($execstring);
+}
+
+function bot_restart_process(){
+	$execstring='/bin/systemctl restart chillbot.service';
 	shell_exec($execstring);
 }
 

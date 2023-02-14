@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import sys
+import signal
 from enum import Enum
 from database import BotDB
 from twitchio.ext import commands
@@ -55,6 +56,7 @@ class ChillBot(commands.Bot):
         self.log = logging
         self.debug = config["debug"]
         self.db = BotDB(config["database"])
+        self.channel = config["channels"][0]
         self.valid_ballots = []
         self.voters = []
         self.active_vote_id = -1
@@ -89,6 +91,8 @@ class ChillBot(commands.Bot):
     """
     async def event_ready(self):
         self.log.info(f'Ready: {self.nick}')
+        chan = self.get_channel(self.channel)
+        await chan.send(f"/me has arrived.")
     
     """
     Event when the bot encounters an error
@@ -112,7 +116,7 @@ class ChillBot(commands.Bot):
             if self.active_vote_id is not None and self.active_vote_id > 0:
                 vote = self.get_vote_number(message.content)
                 if vote in self.valid_ballots and message.author.display_name not in self.voters:
-                    print(f"Casting vote for {vote}")
+                    self.log.info(f"Casting vote for {vote}")
                     result = self.db.cast_vote(message.author.display_name, vote, self.active_vote_id)
                     if result is not None:
                         self.voters.append(message.author.display_name)
@@ -308,6 +312,20 @@ logging.basicConfig(
 )
 
 
+
+#Add a handler for sigterm signal
+def handler(signum, frame):
+    signame = signal.Signals(signum).name
+    logging.info(f'SIGTERM Caught {signame} ({signum})')
+    logging.debug(f'SIGTERM Caught {signame} ({signum})')
+    bot.close()
+    logging.info("=== Exiting... ===")
+    raise OSError("Couldn't open device!")
+
+# Setup the SIGTERM Handler to gracefully exit (hopefully)
+signal.signal(signal.SIGTERM, handler)
+
+logging.info("=== Starting ChillBot ===")
 bot = ChillBot(config)
 
 try:
