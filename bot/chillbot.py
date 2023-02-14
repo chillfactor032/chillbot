@@ -307,7 +307,7 @@ if not args.logfile:
 logging.basicConfig(
     filename=log_file,
     level=log_level,
-    filemode="w",
+    filemode="a",
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
