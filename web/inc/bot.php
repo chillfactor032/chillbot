@@ -224,17 +224,17 @@ function bot_process_running(){
 }
 
 function bot_start_service(){
-	$execstring='/bin/systemctl start chillbot.service';
+	$execstring='sudo /bin/systemctl start chillbot.service';
 	shell_exec($execstring);
 }
 
 function bot_stop_service(){
-	$execstring='/bin/systemctl stop chillbot.service';
+	$execstring='sudo /bin/systemctl stop chillbot.service';
 	shell_exec($execstring);
 }
 
 function bot_restart_service(){
-	$execstring='/bin/systemctl restart chillbot.service';
+	$execstring='sudo /bin/systemctl restart chillbot.service';
 	shell_exec($execstring);
 }
 

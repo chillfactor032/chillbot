@@ -40,6 +40,17 @@ switch($msg_type){
         die();
 }
 
+
+function bot_stop_service(){
+	$execstring='sudo /bin/systemctl stop chillbot.service';
+	shell_exec($execstring);
+}
+
+function bot_start_service(){
+	$execstring='sudo /bin/systemctl stop chillbot.service';
+	shell_exec($execstring);
+}
+
 //Process a Twitch Notification
 function process_notification($headers, $body){
     global $config;
@@ -69,12 +80,14 @@ function process_notification($headers, $body){
             $user = $body->event->broadcaster_user_name;
             $time = $body->event->started_at;
             eventsub_log("Type: Stream Online [$user] at $time");
+            bot_start_service();
             die();
             break;
         case "stream.offline":
             //Stream is Offline
             $user = $body->event->broadcaster_user_name;
-            eventsub_log("Type: Stream Online [$user]");
+            eventsub_log("Type: Stream Offline [$user]");
+            bot_stop_service();
             die();
             break;
     }

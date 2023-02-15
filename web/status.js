@@ -8,7 +8,7 @@ const badge_json = {
 };
 
 const eventsubs_status = {
-    "enabled": "<i class=\"alive fa-solid fa-circle-check status-gif\"></i>",
+    "enabled": "<i class=\"alive fa-solid fa-circle-check\"></i>",
     "webhook_callback_verification_pending": "<i class=\"warning fa-solid fa-triangle-exclamation\"></i>",
     "webhook_callback_verification_failed": "<i class=\"dead fa-solid fa-skull\"></i>",
     "notification_failures_exceeded": "<i class=\"dead fa-solid fa-skull\"></i>",
