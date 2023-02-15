@@ -28,10 +28,9 @@ if(!$db->connect()){
 $cur_vote = $db->current_vote();
 
 if($cur_vote == 0){
-	http_response_code(400);
 	$msg = array(
-		"result" => "error",
-		"reason" => "Vote Error",
+		"result" => "redirect",
+		"reason" => "Redirect to previous vote",
 		"details" => "No In-Progress Vote");
 	die(json_encode($msg));
 }
@@ -67,8 +66,10 @@ switch($_GET["task"]){
 		break;
 	case "monitor":
 		$votes = $db->get_votes($cur_vote);
+		$status = $db->vote_status($cur_vote);
 		if($votes){
 			$msg = array("result" => "success",
+				"status" => $status,
 				"data" => $votes);
 		}else{
 			http_response_code(500);

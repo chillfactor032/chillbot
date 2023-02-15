@@ -20,17 +20,18 @@ $number_emoji = [
 ];
 
 function getWebhookJson_vote($vote_data, $vote_id){
+    global $bot_name;
     global $timestamp;
     global $number_emoji;
     $webhook_obj = [
         "embeds"=>[[
             "color" => 11601173,
             "title" => "Live Learn Poll Results",
-            "url" => "https://twitchbot.chillaspect.com/livelearns.php?vote=".$vote_id,
+            "url" => "https://twitchbot.chillaspect.com/voting.php?vote=".$vote_id,
             "fields" => [],
             "timestamp" => $timestamp,
             "footer" => [
-                "text" => "Autoposted by MrFusion_Bot"
+                "text" => "Autoposted by ".$bot_name
             ]]
         ]
     ];
@@ -45,6 +46,7 @@ function getWebhookJson_vote($vote_data, $vote_id){
         $split = str_split($chars);
         foreach($split as $c){
             $num = intval($c);
+            $num = ($num+1)%10;
             $emoji_str .= $number_emoji[$num];
         }
         //If not the first item, add the spacer
@@ -68,6 +70,7 @@ function getWebhookJson_vote($vote_data, $vote_id){
 }
 
 function getWebhookJson_raid($raids, $days){
+    global $bot_name;
     global $timestamp;
     global $number_emoji;
     $webhook_obj = [
@@ -79,7 +82,7 @@ function getWebhookJson_raid($raids, $days){
                 "fields" => [],
                 "timestamp" => $timestamp,
                 "footer" => [
-                    "text" => "Autoposted by MrFusion_Bot"
+                    "text" => "Autoposted by ".$bot_name
                 ]
             ]
         ]
@@ -94,6 +97,7 @@ function getWebhookJson_raid($raids, $days){
         $split = str_split($chars);
         foreach($split as $c){
             $num = intval($c);
+            $num = ($num+1)%10;
             $emoji_str .= $number_emoji[$num];
         }
         //If not the first item, add the spacer

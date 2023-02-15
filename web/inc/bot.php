@@ -16,7 +16,7 @@ $links = [
 		"highlight" => ""
 	],[
 		"name" => "Voting",
-		"file" => "livelearns.php",
+		"file" => "voting.php",
         "icon" => "fa-check-to-slot",
 		"highlight" => ""
 	],[

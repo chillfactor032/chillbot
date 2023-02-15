@@ -215,11 +215,17 @@ function getVoteUpdate(){
 	var votes;
 	var total = 0;
 	var cell;
+	let status = "open";
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200) {
 			result = JSON.parse(this.responseText);
-			console.log(result);
+			check_redirect = result["result"]
+			if(result["result"]=="redirect"){
+				let vote_id_ele = document.getElementById("vote_id");
+				window.location.href = "voting.php?vote="+vote_id_ele.value;
+				return;
+			}
 			votes = result["data"];
 			var total = 0;
 			var cell;

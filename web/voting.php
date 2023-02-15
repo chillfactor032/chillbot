@@ -30,7 +30,7 @@ $prev_vote_html = "";
 if($prev_vote > 0){
 	$prev_vote_html = <<<HTML
 <div style="float: left;">
-		<button id="view_last_poll_btn" class="styled-button" type="button" onclick="window.location.href = 'livelearns.php?vote=$prev_vote';">View Last Poll</button>
+		<button id="view_last_poll_btn" class="styled-button" type="button" onclick="window.location.href = 'voting.php?vote=$prev_vote';">View Last Poll</button>
 	</div>
 HTML;
 }
@@ -79,7 +79,7 @@ if($cur_vote > 0 && isset($_REQUEST["closevote"])){
 	//The vote is over!
 	$vote_closed = $db->close_vote($cur_vote);
 	if($vote_closed){
-		redirect("livelearns.php?vote=".$cur_vote);
+		redirect("voting.php?vote=".$cur_vote);
 	}else{
 		redirect_error("votenotclosed");
 	}
@@ -228,7 +228,7 @@ if($page_mode == "view"){
 <div class="winner-text">
 $vote_winner_msg
 </div>
-<form method="GET" action="livelearns.php">
+<form method="GET" action="voting.php">
 <input type="hidden" id="vote_id" name="vote" value="$cur_vote">
 <input type="hidden" name="closevote" value="true">
 <table id="song-table" class="styled-table center" style="">
@@ -307,7 +307,7 @@ $end = <<<EOD
 </table>
 <div style="float: right;">
     <button id="discord_button" class="styled-button" type="button" onclick="sendDiscord();">Send to Discord</button>
-	<button class="styled-button" type="button" onclick="window.location.href = 'livelearns.php';">New Poll</button>
+	<button class="styled-button" type="button" onclick="window.location.href = 'voting.php';">New Poll</button>
 </div>
 </form>
 </div>
@@ -318,8 +318,8 @@ EOD;
 	$html = <<<EOD
 <div class="center" style="width: 80%;" >
 <h1 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> $page_header </h1>
-<form method="GET" action="livelearns.php">
-<input type="hidden" name="vote" value="$cur_vote">
+<form method="GET" action="voting.php">
+<input type="hidden" id="vote_id" name="vote" value="$cur_vote">
 <input type="hidden" name="closevote" value="true">
 <table id="song-table" class="styled-table center">
 	<tr>
@@ -400,7 +400,7 @@ EOD;
 	$html = <<<EOD
 <div class="center" style="width: 80%;" >
 <h1 class="" style="margin: 0; padding-bottom: 10px; text-align: center;"> $page_header </h1>
-<form method="POST" onsubmit="localStorage.removeItem('state')" action="livelearns.php">
+<form method="POST" onsubmit="localStorage.removeItem('state')" action="voting.php">
 <table id="song-table" class="styled-table center" style="">
 	<tr>
 		<th style="width: 50px; text-align: right;">&nbsp;</th>
