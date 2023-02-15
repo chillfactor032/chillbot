@@ -38,6 +38,21 @@ class Database{
 		return false;
 	}
 
+	//Fetch Heartbeat for topic
+	function get_heartbeat($topic){
+		if(!$this->is_connected()) return -1;
+		$sql = "SELECT MAX(id), topic, msg, TIME_TO_SEC(TIMEDIFF(CURRENT_TIMESTAMP(), timestamp)) as age FROM heartbeat WHERE topic = ?;";
+		$stmt = $this->conn->prepare($sql); 
+		$stmt->bind_param("s", $topic);
+		$stmt->execute();
+		$result = $stmt->get_result();
+		if($result->num_rows > 0){
+			$row = $result->fetch_assoc();
+			return $row;	
+		}
+		return [];
+	}
+
 	// Insert a raid
 	function add_raid($user_name, $user_id, $viewers){
 		$result = false;

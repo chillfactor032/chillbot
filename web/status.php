@@ -7,6 +7,122 @@ if(!is_authorized()){
     die("Unauthorized");
 }
 
+if(isset($_GET["start"])){
+    $response = [
+        "success" => False,
+        "msg" => "",
+        "elapsed" => 0
+    ];
+    $starttime = microtime(true);
+    $pid = bot_process_running();
+    if($pid != -1){
+        $response["success"] = True;
+        $response["msg"] = "Bot already running. PID: ".$pid;
+        header("Content-Type: application/json;");
+        $json = json_encode($response, JSON_PRETTY_PRINT+JSON_UNESCAPED_SLASHES);
+        echo($json);
+        die();
+    }
+    bot_start_service();
+    $elapsed = microtime(true)-$starttime;
+    while($elapsed  < 7 and $pid < 0){
+        sleep(0.5);
+        $pid = bot_process_running();
+        $elapsed = microtime(true)-$starttime;
+    }
+    $response["elapsed"] = $elapsed;
+    if($pid != -1){
+        $response["success"] = True;
+        $response["msg"] = "Bot Started. PID: ".$pid;
+        header("Content-Type: application/json;");
+        $json = json_encode($response, JSON_PRETTY_PRINT+JSON_UNESCAPED_SLASHES);
+        echo($json);
+        die();
+    }else{
+        $response["success"] = False;
+        $response["msg"] = "Bot not started.";
+        $json = json_encode($response, JSON_PRETTY_PRINT+JSON_UNESCAPED_SLASHES);
+        echo($json);
+        die();
+    }
+}
+
+if(isset($_GET["stop"])){
+    $response = [
+        "success" => False,
+        "msg" => "",
+        "elapsed" => 0
+    ];
+    $pid = bot_process_running();
+    if($pid == -1){
+        $response["success"] = True;
+        $response["msg"] = "Bot already stopped.";
+        header("Content-Type: application/json;");
+        $json = json_encode($response, JSON_PRETTY_PRINT+JSON_UNESCAPED_SLASHES);
+        echo($json);
+        die();
+    }
+    bot_stop_service();
+    $starttime = microtime(true);
+    $elapsed = microtime(true)-$starttime;
+    while($elapsed  < 7 and $pid >= 0){
+        sleep(0.5);
+        $pid = bot_process_running();
+        $elapsed = microtime(true)-$starttime;
+    }
+    $response["elapsed"] = $elapsed;
+    if($pid == -1){
+        $response["success"] = True;
+        $response["msg"] = "Bot stopped.";
+        header("Content-Type: application/json;");
+        $json = json_encode($response, JSON_PRETTY_PRINT+JSON_UNESCAPED_SLASHES);
+        echo($json);
+        die();
+    }else{
+        $response["success"] = False;
+        $response["msg"] = "Bot cannot be stopped.";
+        header("Content-Type: application/json;");
+        $json = json_encode($response, JSON_PRETTY_PRINT+JSON_UNESCAPED_SLASHES);
+        echo($json);
+        die();
+    }
+}
+
+if(isset($_GET["restart"])){
+    $response = [
+        "success" => False,
+        "msg" => "",
+        "elapsed" => 0
+    ];
+    $starttime = microtime(true);
+    $oldpid = bot_process_running();
+    $newpid = $oldpid;
+    if($oldpid < 0){
+        bot_start_service();
+    }else{
+        bot_restart_service();
+    }
+    $newpid = bot_process_running();
+    $elapsed = microtime(true)-$starttime;
+    while($elapsed < 7 and $oldpid == $newpid){
+        sleep(0.5);
+        $newpid = bot_process_running();
+        $elapsed = microtime(true)-$starttime;
+    }
+    if($oldpid == $newpid){
+        $response["success"] = False;
+        $response["msg"] = "New process cant be started.";
+    }else{
+        $response["success"] = True;
+        $response["msg"] = "New process started. PID: ".$newpid;
+    }
+    $response["elapsed"] = $elapsed;
+    header("Content-Type: application/json;");
+    $json = json_encode($response, JSON_PRETTY_PRINT+JSON_UNESCAPED_SLASHES);
+    echo($json);
+    die();
+}
+
 //Create DB Connection
 $db = new Database($config["database"]);
 
@@ -16,7 +132,31 @@ if(!$db->connect()){
 }
 
 function botstatus(){
-    return [];
+    global $db;
+    $twitch_heartbeat = $db->get_heartbeat("chillbot");
+    $twitch_age = -1;
+    if(empty($twitch_heartbeat)){
+        $twitch_age = -1;
+    }else{
+        $twitch_age = $twitch_heartbeat["age"];
+    }
+
+    $db_heartbeat = $db->get_heartbeat("db");
+    $db_age = -1;
+    if(empty($db_heartbeat)){
+        $db_age = -1;
+    }else{
+        $db_age = $db_heartbeat["age"];
+    }
+
+    $pid = bot_process_running();
+    $status_str = "";
+    $status_arr = [
+        "pid" => $pid,
+        "db" => $db_age,
+        "twitch" => $twitch_age
+    ];
+    return $status_arr;
 }
 
 function eventsubs(){

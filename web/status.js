@@ -21,13 +21,91 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function updateBotStatus(){
+async function controlBot(action){
+    let stop_btn = document.getElementById("bot_stop_btn");
+    let start_btn = document.getElementById("bot_start_btn");
+    let restart_btn = document.getElementById("bot_restart_btn");
+    let text_ele = document.getElementById("botstatus-text");
+
+    text_ele.innerHTML = "<img src=\"img/status.gif\" style=\"height:24px; width:auto;\"> Working...";
+
+    stop_btn.disabled = true;
+    start_btn.disabled = true;
+    restart_btn.disabled = true;
+
+    let response = await fetch("status.php?"+ action +"=1");
+    let json = await response.json();
+    
+    text_ele.innerHTML = json["msg"];
+
+    stop_btn.disabled = false;
+    start_btn.disabled = false;
+    restart_btn.disabled = false;
+}
+
+async function updateBotStatus(){
     console.log("updateBotStatus");
-    var e = document.getElementById("bot-status-symbol");
+    var e = document.getElementById("botstatus-status-symbol");
     e.innerHTML = "<img src=\"img/status.gif\" class=\"status-gif\">";
+    let proc_status_element = document.getElementById("bot-process-status-cell");
+    let db_status_element = document.getElementById("bot-db-status-cell");
+    let twitch_status_element = document.getElementById("bot-twitchchat-status-cell");
 
     //Fetch Bot Status
+    //Fetch Event Subs
+    let response = await fetch("status.php?card=botstatus");
+    let json = await response.json();
 
+    let pid = json["botstatus"]["pid"];
+    let db_age = json["botstatus"]["db"];
+    let tc_age = json["botstatus"]["twitch"];
+
+    if(pid < 0){
+        proc_status_element.innerHTML = "&nbsp;<i class=\"fa-solid fa-skull\"></i> Not Running";
+        proc_status_element.className = "dead";
+    }else{
+        proc_status_element.innerHTML = "&nbsp;<i class=\"fa-solid fa-circle-check\"></i> PID "+pid;
+        proc_status_element.className = "alive";
+    }
+
+    if(db_age < 0){
+        //Never Updated
+        db_status_element.innerHTML = "&nbsp;<i class=\"fa-solid fa-skull\"></i> Never Updated";
+        db_status_element.className = "dead";
+    }else if(db_age <= 30){
+        //Updated less than 30 secs... good to go
+        db_status_element.innerHTML = "&nbsp;<i class=\"fa-solid fa-circle-check\"></i>";
+        db_status_element.className = "alive";
+    }else if(db_age < 60){
+        //Updated over 30 secs ago but less than 1 min...warn
+        db_status_element.innerHTML = "&nbsp;<i class=\"fa-solid fa-triangle-exclamation\"></i> "+db_age+"s";
+        db_status_element.className = "warning";
+    }else{
+        //Update over 1 mins ago... down?
+        db_status_element.innerHTML = "&nbsp;<i class=\"fa-solid fa-skull\"></i> Not Connected";
+        db_status_element.className = "dead";
+    }
+
+    if(tc_age < 0){
+        //Never Updated
+        twitch_status_element.innerHTML = "&nbsp;<i class=\"fa-solid fa-skull\"></i> Never Updated";
+        twitch_status_element.className = "dead";
+    }else if(tc_age <= 30){
+        //Updated less than 30 secs... good to go
+        twitch_status_element.innerHTML = "&nbsp;<i class=\"fa-solid fa-circle-check\"></i>";
+        twitch_status_element.className = "alive";
+    }else if(tc_age < 60){
+        //Updated over 30 secs ago but less than 1 min...warn
+        twitch_status_element.innerHTML = "&nbsp;<i class=\"fa-solid fa-triangle-exclamation\"></i> "+db_age+"s";
+        twitch_status_element.className = "warning";
+    }else{
+        //Update over 1 mins ago... down?
+        twitch_status_element.innerHTML = "&nbsp;<i class=\"fa-solid fa-skull\"></i> Not Connected";
+        twitch_status_element.className = "dead";
+    }
+
+    updateDiv = document.getElementById("botstatus-updatetime-ms");
+    updateDiv.value = Date.now();
     e.innerHTML = "<i class=\"fa-solid fa-circle-check status-gif\"></i>";
 }
 
@@ -40,7 +118,7 @@ async function updateEventsubs(){
     let response = await fetch("status.php?card=eventsubs");
     let json = await response.json();
     
-    var table = document.getElementById("eventsubs-table");
+    let table = document.getElementById("eventsubs-table");
     table.innerHTML = "";
 
     let tr = table.insertRow();
@@ -50,8 +128,6 @@ async function updateEventsubs(){
     td2.appendChild(document.createTextNode("Status"));
     let es_type = "";
     let es_status= "";
-
-    console.log(json);
 
     for(let i = 0; i < json["eventsubs"].length; i++){
         es_type = json["eventsubs"][i]["type"];
@@ -132,7 +208,6 @@ async function updateRaids(){
 
     //Fetch Raids
     let response = await fetch("status.php?card=raid");
-    //console.log(response.text());
     let json = await response.json();
 
     raidTable = document.getElementById("raid-table");

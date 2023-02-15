@@ -35,6 +35,36 @@ class BotDB:
             attempts -= 1
 
     """
+    Save a heartbeat msg to the database to let webapp know we are alive
+    """
+    def heartbeat(self, topic):
+        self.check_connection()
+        sql = "UPDATE heartbeat SET timestamp=CURRENT_TIMESTAMP() WHERE topic = %s"
+        cursor = self.db.cursor()
+        cursor.execute(sql, (topic,))
+        self.db.commit()
+        rowcount = cursor.rowcount
+        cursor.close()
+        if rowcount == 0:
+            row_id = self.create_heartbeat(topic)
+            if row_id > 0:
+                rowcount = 1
+        return rowcount > 0
+
+    """
+    Create the heartbeat row for the given topic
+    """
+    def create_heartbeat(self, topic):
+        self.check_connection()
+        sql = "INSERT INTO heartbeat (topic) VALUES (%s);"
+        cursor = self.db.cursor()
+        cursor.execute(sql, (topic,))
+        self.db.commit()
+        row_id = cursor.lastrowid
+        cursor.close()
+        return row_id
+
+    """
     Log a chat message
     """
     def log_chat(self, username, badges, msg):

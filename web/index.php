@@ -76,30 +76,30 @@ if(!is_authorized()){
 	<article class="card">
 		<h2 class="heading"> Bot Status </h2>
 		<div class="text">
-			<table style="width: 90%; margin: auto; border-collapse: collapse;">
+			<table id="botstatus-table" style="width: 90%; margin: auto; border-collapse: collapse;">
 				<tr>
 					<td class="item">Status:</td>
-					<td class="alive"><i class="fa-solid fa-circle-check"></i></td>
+					<td class="" id="bot-process-status-cell"></td>
 				</tr>
 				<tr>
 					<td class="item">Database:</td>
-					<td class="warning"><i class="fa-solid fa-triangle-exclamation"></i></td>
+					<td class="" id="bot-db-status-cell"></td>
 				</tr>
 				<tr>
 					<td class="item">Twitch Chat:</td>
-					<td class="dead"><i class="fa-solid fa-skull"></i></td>
+					<td class="" id="bot-twitchchat-status-cell"></td>
 				</tr>
 			</table>
 			<div style="margin: 10px auto 10px auto; text-align: center;">
-				<button>Stop</button>
-				<button>Start</button>
-				<button>Restart</button>
-				<p>
-					This feature is not live yet. Stay tuned.
+				<button id="bot_stop_btn" onclick="controlBot('stop');">Stop</button>
+				<button id="bot_start_btn" onclick="controlBot('start');">Start</button>
+				<button id="bot_restart_btn" onclick="controlBot('restart');">Restart</button>
+				<p id="botstatus-text">
+					&nbsp;
 				</p>
 			</div>
 		</div>
-		<div id="botstatus-status-img" style="margin: 0; padding:0"><i class="fa-solid fa-circle-check status-gif"></i></div>
+		<div id="botstatus-status-symbol" style="margin: 0; padding:0"><i class="fa-solid fa-circle-check status-gif"></i></div>
 		<button style="position: absolute; bottom: 10px; left: 10px;"><i class="fa-solid fa-arrows-rotate"></i></button>
 		<div id="botstatus-updatetime-label" style="position: absolute; bottom: 10px; right: 10px;">Waiting to update</div>
 		<input id="botstatus-updatetime-ms" type="hidden" value="0" />
@@ -180,6 +180,12 @@ updateEventsubs();
 
 var tick = 0;
 setInterval(() => {
+	//Fires Every 5s
+	if(tick % 5 == 0){
+		console.log(tick);
+		updateBotStatus();
+	}
+
 	//Fires Every Minute
 	if(tick % 60 == 0){
 		updateChatters()

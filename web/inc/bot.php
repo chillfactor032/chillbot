@@ -228,12 +228,12 @@ function bot_start_service(){
 	shell_exec($execstring);
 }
 
-function bot_stop_process(){
+function bot_stop_service(){
 	$execstring='/bin/systemctl stop chillbot.service';
 	shell_exec($execstring);
 }
 
-function bot_restart_process(){
+function bot_restart_service(){
 	$execstring='/bin/systemctl restart chillbot.service';
 	shell_exec($execstring);
 }

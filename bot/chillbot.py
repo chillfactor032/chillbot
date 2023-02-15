@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import signal
+import threading
 from enum import Enum
 from database import BotDB
 from twitchio.ext import commands
@@ -62,6 +63,9 @@ class ChillBot(commands.Bot):
         self.active_vote_id = -1
         self.prefix = config["command_prefix"]
         self.log_chat_flag = config["log_chat"]
+        self.stopped = False
+        self.heartbeat_timer = threading.Timer(5, self.heartbeat)
+        self.heartbeat_timer.start()
         self.command_list = [
             {
                 "name": "votestart",
@@ -85,6 +89,17 @@ class ChillBot(commands.Bot):
                 ]
             }
         ]
+        # Setup the SIGTERM Handler to gracefully exit (hopefully)
+        signal.signal(signal.SIGTERM, self.sig_handler)
+        signal.signal(signal.SIGINT, self.sig_handler)
+    
+    def heartbeat(self):
+        db_heartbeat = self.db.heartbeat("db")
+        if len(self.connected_channels) > 0:
+            chat_heartbeat = self.db.heartbeat("chillbot")
+        if not self.stopped:
+            self.heartbeat_timer = threading.Timer(5, self.heartbeat)
+            self.heartbeat_timer.start()
 
     """
     Event when the bot is connected and listening to messages
@@ -144,7 +159,6 @@ class ChillBot(commands.Bot):
         if self.active_vote_id is not None:
             candidate_str = ""
             candidates = self.db.get_candidates(self.active_vote_id)
-            print(candidates)
             for candidate in candidates:
                 self.valid_ballots.append(candidate[0])
                 candidate_str += f"{candidate[0]} for {candidate[1]}. "
@@ -277,6 +291,21 @@ class ChillBot(commands.Bot):
             level.append(Level.SUBT3)
         return level
 
+    def sig_handler(self, signum, frame):
+        signame = signal.Signals(signum).name
+        logging.info(f'Caught Signal {signame} ({signum})')
+        bot.loop.run_until_complete(bot.close)
+        logging.info("=== Exiting... ===")
+
+    async def close(self):
+        self.heartbeat_timer.cancel()
+        bot.stopped = True
+        try:
+            await commands.Bot.close(self)
+            sys.exit(0)
+        except RuntimeError as e:
+            self.log.error(repr(e))
+
 SCRIPT_DIR = os.path.dirname(__file__)
 CONFIG_PATH = os.path.join(SCRIPT_DIR, "..", "config", "config.json")
 
@@ -311,19 +340,6 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-
-
-#Add a handler for sigterm signal
-def handler(signum, frame):
-    signame = signal.Signals(signum).name
-    logging.info(f'SIGTERM Caught {signame} ({signum})')
-    logging.debug(f'SIGTERM Caught {signame} ({signum})')
-    bot.close()
-    logging.info("=== Exiting... ===")
-    raise OSError("Couldn't open device!")
-
-# Setup the SIGTERM Handler to gracefully exit (hopefully)
-signal.signal(signal.SIGTERM, handler)
 
 logging.info("=== Starting ChillBot ===")
 bot = ChillBot(config)
